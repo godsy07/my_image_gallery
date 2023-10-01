@@ -11,3 +11,26 @@
     width: 100%;
     object-fit: contain;
 }
+
+.selected-image-overlay-div {
+    padding: 30px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 9999;
+    box-sizing: border-box;
+    background-color: rgba(8, 6, 6, 0.712);
+}
+
+.selected-image-overlay-div .selected-image-backdrop {
+    background-color: transparent;
+    position: absolute;
+}
+
+.selected-image-overlay-div .selected-image {
+    z-index: 10000;
+    object-fit: contain;
+    max-height: calc(100vh - 50px);
+}

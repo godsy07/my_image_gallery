@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Image, Modal } from 'react-bootstrap'
+import { Image } from 'react-bootstrap'
 
 import './image-div.styles.css'
+import { FaTimesCircle } from 'react-icons/fa';
 
 const ImageDiv = ({ image_data }) => {
     const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -22,18 +23,15 @@ const ImageDiv = ({ image_data }) => {
         <div className='image-div cursor-pointer' onClick={() => openImageModalOverlay(image_data)}>
             <Image className='image-area' src={`${image_data.file_path}`} />
         </div>
-        <Modal show={imageModalOpen} onHide={closeImageModalOverlay} fullscreen={true} className='m-0 p-0'>
-            <Modal.Header closeButton={true}>
-                {selectedImage && (
-                    <h2 className='text-center w-100'>{selectedImage.title}</h2>
-                )}
-            </Modal.Header>
-            <Modal.Body>
-                {selectedImage && (
-                    <Image src={selectedImage.file_path} style={{ objectFit: "contain", width: "100%", height: "100%" }} />
-                )}
-            </Modal.Body>
-        </Modal>
+        {imageModalOpen && (
+            <div className='selected-image-overlay-div d-flex justify-content-center'>
+                <div className='h-100 w-100 selected-image-backdrop' onClick={closeImageModalOverlay}></div>
+                <div style={{ position: 'absolute', right: '10px', top: '0px', color: 'red', fontSize: '30px' }}>
+                    <FaTimesCircle title='Close' onClick={closeImageModalOverlay} style={{ cursor: 'pointer' }} />
+                </div>
+                <Image className='w-00 img-fluid selected-image' src={selectedImage.file_path} />
+            </div>
+        )}
     </>
   )
 }
