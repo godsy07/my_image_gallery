@@ -13,8 +13,6 @@ const MainPage = () => {
   const [imageListLoading, setImageListLoading] = useState(false);
 
   const [pageNo, setPageNo] = useState(1);
-  // const [pageNoSeries, setPageNoSeries] = useState([1]);
-  // const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1]);
   const [pageNoSeries, setPageNoSeries] = useState([1, 2, 3, 4, 5, 6]);
   const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1, 2, 3, 4]);
 
@@ -142,8 +140,9 @@ const MainPage = () => {
               href='https://godsy07.netlify.app/'
               title='Godsy07 Portfolio'
               target='_blank'
+              rel="noreferrer"
               style={{ color: "#fff !important" }}
-            >
+              >
               Godsy07
             </a>
           </span>
@@ -152,7 +151,8 @@ const MainPage = () => {
             href='https://github.com/godsy07'
             title='Github'
             target='_blank'
-          >
+            rel="noreferrer"
+            >
             <FaGithubSquare style={{ fontSize: "20px", color: "#fff" }} />
           </a>
           <a
@@ -160,7 +160,8 @@ const MainPage = () => {
             href='https://www.linkedin.com/in/godsy07/'
             title='LinkedIn'
             target='_blank'
-          >
+            rel="noreferrer"
+            >
             <FaLinkedin style={{ fontSize: "20px", color: "#fff" }} />
           </a>
           <a
@@ -168,6 +169,7 @@ const MainPage = () => {
             href='https://godsy07.netlify.app/'
             title='Instagram'
             target='_blank'
+            rel="noreferrer"
           >
             <FaInstagramSquare style={{ fontSize: "20px", color: "#fff" }} />
           </a>
