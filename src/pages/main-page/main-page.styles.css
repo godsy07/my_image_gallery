@@ -11,6 +11,10 @@
     grid-row-gap: 14px;
 }
 
+.image-list-footer {
+    padding: 0 10px;
+}
+
 @media (max-width: 400px) {
     .image-grid-area {
         grid-template-columns: repeat(1, 1fr);
