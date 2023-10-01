@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Image, Modal } from 'react-bootstrap'
+
 import './image-div.styles.css'
 
 const ImageDiv = ({ image_data }) => {

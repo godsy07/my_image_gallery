@@ -1,10 +1,16 @@
+import { Container, Navbar } from 'react-bootstrap'
 import './page-header.styles.css'
 
 const PageHeader = () => {
   return (
-    <div className='page-header px-4 py-3'>
-      <h3>Image Gallery</h3>
-    </div>
+    <>
+      <Navbar expand="lg" className='bg-success' sticky='top'>
+      <Container>
+        <Navbar.Brand href="#home">Image Gallery</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      </Container>
+      </Navbar>
+    </>
   )
 }
 
