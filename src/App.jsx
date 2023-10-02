@@ -1,4 +1,3 @@
-import { ToastContainer } from 'react-toastify';
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -17,7 +16,6 @@ const App = () => {
     <BrowserRouter future={{ v7_startTransition: true }}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ToastContainer />
           <Routes>
 
             <Route path="/" element={<MainPage />} />

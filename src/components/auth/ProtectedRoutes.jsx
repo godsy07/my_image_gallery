@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from "../auth/AuthContext"
 import { Col, Row, Spinner } from 'react-bootstrap'
-import ToastifyMessage from '../toast/ToastifyMessage'
+import Swal from 'sweetalert2'
 
 const LazyOutletWrapper = lazy(() => import("../wrapper/OutletWrapper"))
 
@@ -57,7 +57,11 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
 
     const checkUserHasPageAccess = (user_data) => {
         if (!userHasPageAccess(user_data.user_type)) {
-            ToastifyMessage({ type: 'warning', message: 'You are not authorized to access this page.' })
+            Swal.fire({
+                icon: 'warning',
+                title: 'Unauthorized',
+                text: 'You are not authorized to access this page.',
+            })
             navigate("/dashboard")
         }
     }

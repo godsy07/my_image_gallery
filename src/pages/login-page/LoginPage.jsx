@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import jwtDecode from 'jwt-decode';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, FormGroup, Form } from 'react-bootstrap'
 
 import { BASE_URL } from '../../config/config';
-import ToastifyMessage from '../../components/toast/ToastifyMessage';
+import { isValidEmail } from '../../utils/functions';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -15,6 +16,11 @@ const LoginPage = () => {
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
+    
+    const [invalidUserEmail, setInvalidUserEmail] = useState(false);
+    const [invalidUserPassword, setInvalidUserPassword] = useState(false);
+    const [invalidUserEmailMessage, setInvalidUserEmailMessage] = useState("");
+    const [invalidUserPasswordMessage, setInvalidUserPasswordMessage] = useState("");
 
     const [loginLoading, setLoginLoding] = useState(false);
 
@@ -38,21 +44,30 @@ const LoginPage = () => {
     const validInputs = () => {
         let status = true;
 
-        if (userEmail === "" && userPassword === "") {
-            ToastifyMessage({ type:"error",message:"Enter the credentials to login." })
+        if (userEmail === "") {
+            setInvalidUserEmail(true);
+            setInvalidUserEmailMessage("Enter your email.");
+            status = false;
+        } else if (!isValidEmail(userEmail)) {
+            setInvalidUserEmail(true);
+            setInvalidUserEmailMessage("Enter a valid email.");
             status = false;
         } else {
-            if (userEmail === "") {
-                ToastifyMessage({ type:"error",message:"Enter your email." })
-                status = false;
-            }
-            if (userPassword === "") {
-                ToastifyMessage({ type:"error",message:"Enter your password." })
-                status = false;
-            } else if (userPassword.length < 6 || userPassword.length > 30) {
-                ToastifyMessage({ type:"error",message:"Password must be between 6 to 30 characters in length." })
-                status = false;
-            }
+            setInvalidUserEmail(false);
+            setInvalidUserEmailMessage("");
+        }
+
+        if (userPassword === "") {
+            setInvalidUserPassword(true);
+            setInvalidUserPasswordMessage("Enter your password");
+            status = false;
+        } else if (userPassword.length < 6 || userPassword.length > 30) {
+            setInvalidUserPassword(true);
+            setInvalidUserPasswordMessage("Password must be between 6 to 30 characters in length.");
+            status = false;
+        } else {
+            setInvalidUserPassword(false);
+            setInvalidUserPasswordMessage("");
         }
 
         return status;
@@ -75,7 +90,11 @@ const LoginPage = () => {
                 },
             );
             if (response.status === 200) {
-                ToastifyMessage({ type:"success", message:response.data.message });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.data.message,
+                })
                 setCookie("img_mgmt_token", response.data.token)
                 navigate("/dashboard");
                 setLoginLoding(false)
@@ -83,9 +102,17 @@ const LoginPage = () => {
         } catch(e) {
             setLoginLoding(false)
             if (e.response) {
-                ToastifyMessage({ type:"error",message:e.response.data.message });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: e.response.data.message,
+                })
             } else {
-                ToastifyMessage({ type:"error",message:"Something went wrong!!!" });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong!!!',
+                })
             }
         }
     }
@@ -100,11 +127,17 @@ const LoginPage = () => {
 
                         <FormGroup className='mb-3 w-100'>
                             <Form.Label>Email:</Form.Label>
-                            <Form.Control type='email' value={userEmail} onChange={(e) => setUserEmail(e.target.value)} placeholder='Enter email' required />
+                            <Form.Control isInvalid={invalidUserEmail} type='email' value={userEmail} onChange={(e) => setUserEmail(e.target.value)} placeholder='Enter email' required />
+                            {invalidUserEmail && (
+                                <Form.Control.Feedback type='invalid'>{invalidUserEmailMessage}</Form.Control.Feedback>
+                            )}
                         </FormGroup>
                         <FormGroup className='mb-3 w-100'>
                             <Form.Label>Password:</Form.Label>
-                            <Form.Control type='password' value={userPassword} onChange={(e) => setUserPassword(e.target.value)} placeholder='Enter password' required />
+                            <Form.Control isInvalid={invalidUserPassword} type='password' value={userPassword} onChange={(e) => setUserPassword(e.target.value)} placeholder='Enter password' required />
+                            {invalidUserPassword && (
+                                <Form.Control.Feedback type='invalid'>{invalidUserPasswordMessage}</Form.Control.Feedback>
+                            )}
                         </FormGroup>
                         <FormGroup className='mb-3 w-100'>
                             <Form.Check label="Remember Me" checked={rememberMe} onChange={(e) => setRememberMe(!rememberMe)} />
