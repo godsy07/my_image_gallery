@@ -1,5 +1,5 @@
 import { Container, Navbar } from 'react-bootstrap'
-import './page-header.styles.css'
+import './layout.styles.css'
 
 const PageHeader = () => {
   return (
