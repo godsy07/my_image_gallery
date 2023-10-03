@@ -5,7 +5,7 @@ import { FaGithubSquare, FaLinkedin, FaInstagramSquare } from "react-icons/fa";
 import ImageDiv from "../../components/image-div/ImageDiv";
 import PageHeader from "../../components/layout/PageHeader";
 import PageFooter from "../../components/layout/PageFooter";
-import ImageDataList from "../../components/layout/ImageDataList";
+import ImageDataList from "../../components/image-data-list/ImageDataList";
 
 import { data } from "../../data/data";
 import "./main-page.styles.css";

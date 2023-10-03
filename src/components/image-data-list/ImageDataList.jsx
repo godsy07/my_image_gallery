@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Button, Spinner } from "react-bootstrap";
 
-import "./layout.styles.css";
+import "./image-data-list.styles.css";
 import ImageDiv from "../image-div/ImageDiv";
 
-const ImageDataList = ({ image_list = [], loading = false }) => {
+const ImageDataList = ({ fetch_url="", image_list = [], loading = false, page_limit=10 }) => {
   const [imageList, setImageList] = useState([]);
   const [imageListLoading, setImageListLoading] = useState(false);
-
+  
+  const [pageLimit, setPageLimit] = useState(page_limit);
   const [pageNo, setPageNo] = useState(1);
   const [pageNoSeries, setPageNoSeries] = useState([1, 2, 3, 4, 5, 6]);
   const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1, 2, 3, 4]);
@@ -21,6 +22,11 @@ const ImageDataList = ({ image_list = [], loading = false }) => {
     setImageListLoading(loading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
+
+  useEffect(() => {
+    setPageLimit(page_limit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page_limit]);
 
   const handlePageNoChange = (e, page_no) => {
     e.preventDefault();
