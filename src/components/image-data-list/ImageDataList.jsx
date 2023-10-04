@@ -3,15 +3,49 @@ import { Button, Spinner } from "react-bootstrap";
 
 import "./image-data-list.styles.css";
 import ImageDiv from "../image-div/ImageDiv";
+import useFetchImageDataList from "../../hooks/useFetchImageDataList";
 
 const ImageDataList = ({ fetch_url="", image_list = [], loading = false, page_limit=10 }) => {
   const [imageList, setImageList] = useState([]);
   const [imageListLoading, setImageListLoading] = useState(false);
   
-  const [pageLimit, setPageLimit] = useState(page_limit);
+  const [searchTerm, setSearchTerm] = useState("");
   const [pageNo, setPageNo] = useState(1);
-  const [pageNoSeries, setPageNoSeries] = useState([1, 2, 3, 4, 5, 6]);
-  const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1, 2, 3, 4]);
+  const [pageLimit, setPageLimit] = useState(page_limit);
+  const [sortDataArray, setSortDataArray] = useState([]);
+  const [pageNoSeries, setPageNoSeries] = useState([1]);
+  const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1]);
+  // const [pageNoSeries, setPageNoSeries] = useState([1, 2, 3, 4, 5, 6]);
+  // const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1, 2, 3, 4]);
+  
+  const [pageData, setPageData] = useState([]);
+  const [pageCount, setPageCount] = useState(0);
+  const [totalItemCount, settotalItemCount] = useState(0);
+
+  const {
+    page_data,
+    page_count,
+    page_current_series,
+    page_count_series,
+    total_data_count,
+    data_loading,
+  } = useFetchImageDataList({
+    fetch_url,
+    data: imageList,
+    page_limit: pageLimit,
+    page_no: pageNo,
+    search_term: searchTerm,
+    sort_data: sortDataArray,
+  });
+
+  useEffect(() => {
+    setPageData(page_data)
+    setPageCount(page_count)
+    setVisiblePageNoSeries(page_current_series)
+    setPageNoSeries(page_count_series)
+    settotalItemCount(total_data_count)
+    setImageListLoading(data_loading)
+  },[page_data, page_count, page_count_series, page_current_series, total_data_count, data_loading])
 
   useEffect(() => {
     setImageList([...image_list]);
@@ -78,20 +112,20 @@ const ImageDataList = ({ fetch_url="", image_list = [], loading = false, page_li
           <Spinner animation='grow' className='mx-1' />
           <Spinner animation='grow' className='mx-1' />
         </>
-      ) : imageList && imageList.length === 0 ? (
+      ) : pageData && pageData.length === 0 ? (
         <p className='mt-5'>No image exsits.</p>
       ) : (
-        imageList &&
-        imageList.length > 0 && (
+        pageData &&
+        pageData.length > 0 && (
           <div className='image-grid-area'>
-            {imageList.map((img, idx) => (
+            {pageData.map((img, idx) => (
               <ImageDiv key={idx} image_data={img} />
             ))}
           </div>
         )
       )}
 
-      {imageList && imageList.length > 0 && (
+      {pageData && pageData.length > 0 && (
         <div className='image-list-footer'>
           <div className='d-flex'>
             <Button
