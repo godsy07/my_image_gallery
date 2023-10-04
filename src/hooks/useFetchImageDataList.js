@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo } from "react";
-import { fetchPaginatedData } from "../../API/creditApiCallls";
+// import { fetchPaginatedData } from "../../API/creditApiCallls";
 
 const fetchPageInfoFromImageDataList = (
   data,
@@ -133,13 +133,13 @@ const useFetchImageDataList = ({
         search_term,
       );
     } else {
-      let new_url = `${fetch_url}?search_term=${search_term}&page_no=${page_no}&page_limit=${page_limit}&sort_data=${JSON.stringify(sort_data)}`;
-      setPageDataLoading(true);
-      processedData = await fetchPaginatedData(new_url);
-      if (processedData) {
-        processedData.data = processedData.data ? [processedData.data] : [[]];
-      }
-      setPageDataLoading(false);
+      // let new_url = `${fetch_url}?search_term=${search_term}&page_no=${page_no}&page_limit=${page_limit}&sort_data=${JSON.stringify(sort_data)}`;
+      // setPageDataLoading(true);
+      // processedData = await fetchPaginatedData(new_url);
+      // if (processedData) {
+      //   processedData.data = processedData.data ? [processedData.data] : [[]];
+      // }
+      // setPageDataLoading(false);
     }
 
     return processedData;
