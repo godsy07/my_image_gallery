@@ -24,7 +24,7 @@ const App = () => {
               <Route path="/" element={<MainPage />} />
               <Route path="/login" element={<LoginPage />} />
 
-              <Route path='/' element={<ProtectedRoutes accessible_to={['admin']} />}>
+              <Route path='/' element={<ProtectedRoutes accessible_to={['admin','user']} />}>
                 <Route path='dashboard' element={<Dashboard />} />
               </Route>
 
