@@ -18,5 +18,5 @@ export const handleLogoutUser = async() => {
     if (!confirm_logout.isConfirmed) return;
 
     userLogout();
-    navigate("/admin_login")
+    navigate("/login")
 }

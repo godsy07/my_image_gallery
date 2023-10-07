@@ -12,21 +12,21 @@ const LazyOutletWrapper = lazy(() => import("../wrapper/OutletWrapper"))
 const ProtectedRoutes = ({ accessible_to=['user'] }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [cookies, removeCookie] = useCookies("img_mgmt_token");
+    const [cookies, removeCookie] = useCookies("my_api_token");
     
     const { authUser, userLogin, userLogout, isUserAuthenticated } = useAuth();
 
     useEffect(() => {
-        if (cookies.img_mgmt_token) {
-            const token = cookies.img_mgmt_token !== "undefined" ? cookies.img_mgmt_token : null;
+        if (cookies.my_api_token) {
+            const token = cookies.my_api_token !== "undefined" ? cookies.my_api_token : null;
             if (token) {
                 const decoded = jwtDecode(token);
                 if (decoded) {
                     if (decoded.exp * 1000 < Date.now()) {
                         // Token expired
                         userLogout();
-                        removeCookie("img_mgmt_token")
-                        navigate("/admin_login")
+                        removeCookie("my_api_token")
+                        navigate("/login")
                     } else {
                         // Save authenticated Details
                         if (!isUserAuthenticated()) userLogin(decoded);
@@ -34,15 +34,15 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
                     }
                 } else {
                     userLogout();
-                    navigate("/admin_login")
+                    navigate("/login")
                 }
             } else {
                 userLogout();
-                navigate("/admin_login")
+                navigate("/login")
             }
         } else {
             userLogout();
-            navigate("/admin_login")
+            navigate("/login")
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);

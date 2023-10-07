@@ -10,7 +10,7 @@ const PageHeader = () => {
     <>
       <Navbar expand="lg" className='bg-success' sticky='top'>
       <Container>
-        <Navbar.Brand href="#home">Image Gallery</Navbar.Brand>
+        <Navbar.Brand href="/">Image Gallery</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse className="justify-content-end">
           <Nav

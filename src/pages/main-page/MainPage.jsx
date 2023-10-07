@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import jwtDecode from 'jwt-decode'
 import { useCookies } from 'react-cookie'
-import { useNavigate } from 'react-router-dom'
 
 import PageHeader from "../../components/layout/PageHeader";
 import PageFooter from "../../components/layout/PageFooter";
@@ -12,21 +11,18 @@ import { BASE_URL } from "../../config/config";
 import { useAuth } from '../../components/auth/AuthContext';
 
 const MainPage = () => {
-  const navigate = useNavigate();
-  const [cookies] = useCookies("img_mgmt_token");  
+  const [cookies] = useCookies("my_api_token");  
   const { userLogin, isUserAuthenticated } = useAuth();
 
   useEffect(() => {
-    let user_logged_in = false;
-    if (cookies.img_mgmt_token) {
-        const token = cookies.img_mgmt_token !== "undefined" ? cookies.img_mgmt_token : null;
+    if (cookies.my_api_token) {
+        const token = cookies.my_api_token !== "undefined" ? cookies.my_api_token : null;
         if (token) {
             const decoded = jwtDecode(token);
             if (decoded) {
                 if (decoded.exp * 1000 > Date.now()) {
                     // Save authenticated Details
                     if (!isUserAuthenticated()) userLogin(decoded);
-                    user_logged_in = true
                 }
             }
         }

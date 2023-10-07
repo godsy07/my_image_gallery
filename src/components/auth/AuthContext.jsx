@@ -5,14 +5,14 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
-  const [removeCookie] = useCookies("img_mgmt_token");
+  const [removeCookie] = useCookies("my_api_token");
 
   const userLogin = (user) => {
     setAuthUser(user);
   };
 
   const userLogout = async () => {
-    removeCookie("img_mgmt_token")
+    removeCookie("my_api_token")
     setAuthUser(null);
   };
 

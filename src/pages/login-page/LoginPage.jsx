@@ -95,7 +95,7 @@ const LoginPage = () => {
                     title: 'Success',
                     text: response.data.message,
                 })
-                setCookie("img_mgmt_token", response.data.token)
+                setCookie("my_api_token", response.data.token)
                 navigate("/dashboard");
                 setLoginLoding(false)
             }
