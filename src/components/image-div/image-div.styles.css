@@ -21,7 +21,7 @@
     width: 100%;
     z-index: 9999;
     box-sizing: border-box;
-    background-color: rgba(8, 6, 6, 0.712);
+    background-color: rgb(8, 6, 6, 0.8);
 }
 
 .selected-image-overlay-div .selected-image-backdrop {
@@ -33,4 +33,5 @@
     z-index: 10000;
     object-fit: contain;
     max-height: calc(100vh - 50px);
+    background-color: rgb(117, 114, 114);
 }

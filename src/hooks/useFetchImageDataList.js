@@ -152,7 +152,6 @@ const useFetchImageDataList = ({
 
   useMemo(async () => {
     const tableInfo = await processImageDataList();
-    console.log("table_info: ", tableInfo)
     if (tableInfo) {
       setPageData(tableInfo.data ? tableInfo.data : []);
       setPageNumber(tableInfo.page_no);
