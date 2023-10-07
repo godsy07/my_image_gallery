@@ -127,7 +127,6 @@ const useFetchImageDataList = ({
       page_no: 1,
     };
     if (fetch_url === "") {
-      //   console.log("Assign passed data as table data");
       processedData = fetchPageInfoFromImageDataList(
         data,
         page_no,
@@ -158,13 +157,11 @@ const useFetchImageDataList = ({
       setPageCount(tableInfo.total_pages);
       setTotalDataCount(tableInfo.total_items);
     }
-  }, [fetch_url, data, page_limit, page_no, sort_data]);
+  }, [fetch_url, page_limit, data, page_no, sort_data]);
 
   // According to fetched page_count, build page_count_series
   useMemo(() => {
-    // console.log("page_no: ", pageNumber, "page_limit: ", page_limit, "page_Count: ", pageCount);
     const seriesData = calculatePageSeries(pageNumber, pageCount);
-    // seriesData = calculatePageSeries(2, 6);
     if (seriesData) {
       setPageCountSeries(seriesData.page_no_series);
       setPageCurrentSeries(seriesData.current_series);

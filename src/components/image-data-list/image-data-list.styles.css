@@ -9,6 +9,8 @@
 
 .image-list-footer {
     padding: 0 10px;
+    display: flex;
+    justify-content: center;
 }
 
 @media (max-width: 400px) {

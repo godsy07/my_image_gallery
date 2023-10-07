@@ -5,7 +5,7 @@ import "./image-data-list.styles.css";
 import ImageDiv from "../image-div/ImageDiv";
 import useFetchImageDataList from "../../hooks/useFetchImageDataList";
 
-const ImageDataList = ({ user_type = "single", image_type="public", fetch_url="", image_list = [], loading = true, page_limit=10 }) => {
+const ImageDataList = ({ user_type = "single", image_type="public", fetch_url="", image_list = [], loading = false, page_limit=10 }) => {
   const [imageList, setImageList] = useState([]);
   const [imageListLoading, setImageListLoading] = useState(loading);
   
@@ -45,12 +45,8 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
     setPageNoSeries(page_count_series)
     settotalItemCount(total_data_count)
     setImageListLoading(data_loading)
-  },[page_data, page_count, page_count_series, page_current_series, total_data_count, data_loading])
-
-  useEffect(() => {
-    setImageList([...image_list]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [image_list]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[page_data, data_loading])
 
   useEffect(() => {
     setImageListLoading(loading);
@@ -61,6 +57,11 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
     setPageLimit(page_limit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page_limit]);
+
+  useEffect(() => {
+    if (fetch_url === "") setImageList([...image_list]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [image_list]);
 
   const handlePageNoChange = (e, page_no) => {
     e.preventDefault();

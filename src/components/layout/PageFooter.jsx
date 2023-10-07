@@ -1,6 +1,6 @@
-import { Container, Navbar } from 'react-bootstrap'
-import './layout.styles.css'
 import { FaGithubSquare, FaInstagramSquare, FaLinkedin } from 'react-icons/fa'
+
+import './layout.styles.css'
 
 const PageFooter = () => {
   return (
