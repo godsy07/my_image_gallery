@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo } from "react";
-// import { fetchPaginatedData } from "../../API/creditApiCallls";
+import { fetchPaginatedData } from "../api/apiCalls";
 
 const fetchPageInfoFromImageDataList = (
   data,
@@ -104,6 +104,8 @@ const useFetchImageDataList = ({
   fetch_url = "",
   data = [],
   page_limit = 10,
+  user_type,
+  image_type,
   page_no = 1,
   search_term = "",
   sort_data = [],
@@ -133,13 +135,16 @@ const useFetchImageDataList = ({
         search_term,
       );
     } else {
-      // let new_url = `${fetch_url}?search_term=${search_term}&page_no=${page_no}&page_limit=${page_limit}&sort_data=${JSON.stringify(sort_data)}`;
-      // setPageDataLoading(true);
-      // processedData = await fetchPaginatedData(new_url);
-      // if (processedData) {
-      //   processedData.data = processedData.data ? [processedData.data] : [[]];
-      // }
-      // setPageDataLoading(false);
+      let new_url = `
+        ${fetch_url}?search_term=${search_term}&page_no=${page_no}&page_limit=${page_limit}
+        &user_type=${user_type}&image_type=${image_type}&sort_data=${JSON.stringify(sort_data)}
+        `;
+      setPageDataLoading(true);
+      processedData = await fetchPaginatedData(new_url);
+      if (processedData) {
+        processedData.data = processedData.data ? processedData.data : [];
+      }
+      setPageDataLoading(false);
     }
 
     return processedData;
@@ -147,6 +152,7 @@ const useFetchImageDataList = ({
 
   useMemo(async () => {
     const tableInfo = await processImageDataList();
+    console.log("table_info: ", tableInfo)
     if (tableInfo) {
       setPageData(tableInfo.data ? tableInfo.data : []);
       setPageNumber(tableInfo.page_no);

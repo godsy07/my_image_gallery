@@ -5,9 +5,9 @@ import "./image-data-list.styles.css";
 import ImageDiv from "../image-div/ImageDiv";
 import useFetchImageDataList from "../../hooks/useFetchImageDataList";
 
-const ImageDataList = ({ fetch_url="", image_list = [], loading = false, page_limit=10 }) => {
+const ImageDataList = ({ user_type = "single", image_type="public", fetch_url="", image_list = [], loading = true, page_limit=10 }) => {
   const [imageList, setImageList] = useState([]);
-  const [imageListLoading, setImageListLoading] = useState(false);
+  const [imageListLoading, setImageListLoading] = useState(loading);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [pageNo, setPageNo] = useState(1);
@@ -15,8 +15,6 @@ const ImageDataList = ({ fetch_url="", image_list = [], loading = false, page_li
   const [sortDataArray, setSortDataArray] = useState([]);
   const [pageNoSeries, setPageNoSeries] = useState([1]);
   const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1]);
-  // const [pageNoSeries, setPageNoSeries] = useState([1, 2, 3, 4, 5, 6]);
-  // const [visiblePageNoSeries, setVisiblePageNoSeries] = useState([1, 2, 3, 4]);
   
   const [pageData, setPageData] = useState([]);
   const [pageCount, setPageCount] = useState(0);
@@ -31,6 +29,8 @@ const ImageDataList = ({ fetch_url="", image_list = [], loading = false, page_li
     data_loading,
   } = useFetchImageDataList({
     fetch_url,
+    user_type,
+    image_type,
     data: imageList,
     page_limit: pageLimit,
     page_no: pageNo,

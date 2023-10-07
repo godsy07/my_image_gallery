@@ -4,3 +4,12 @@ export const isValidEmail = (email) => {
 
     return emailPattern.test(email);
 }
+
+
+export const isHTML = (content) => {
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = content;
+    // Check if the innerHTML of the temporary element is different from the original content
+    // This indicates that the content was successfully parsed as HTML
+    return tempElement.innerHTML !== content;
+}

@@ -9,13 +9,19 @@ import ImageDataList from "../../components/image-data-list/ImageDataList";
 
 import { data } from "../../data/data";
 import "./main-page.styles.css";
+import { BASE_URL } from "../../config/config";
 
 const MainPage = () => {
   return (
     <>
       <PageHeader />
       <div className='main-div'>
-        <ImageDataList image_list={data} loading={false} />
+        <ImageDataList
+          user_type="all"
+          loading={false}
+          image_list={data}
+          fetch_url={`${BASE_URL}/images/get-paginated-images`}
+        />
       </div>
       <PageFooter />
     </>
