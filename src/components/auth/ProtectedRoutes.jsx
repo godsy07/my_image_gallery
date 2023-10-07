@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from "../auth/AuthContext"
 import { Col, Row, Spinner } from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import PageHeader from '../layout/PageHeader'
 
 const LazyOutletWrapper = lazy(() => import("../wrapper/OutletWrapper"))
 
@@ -71,15 +72,18 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
     }
 
   return (
-    <main className='main-div'>
-        <Row className='p-0 m-0'>
-            <Col className='p-0 m-0'>
-                <Suspense fallback={<div><Spinner animation='border' /></div>}>
-                    <LazyOutletWrapper />
-                </Suspense>
-            </Col>
-        </Row>
-    </main>
+    <>
+        <PageHeader />
+        <main className='main-div'>
+            <Row className='p-0 m-0'>
+                <Col className='p-0 m-0'>
+                    <Suspense fallback={<div><Spinner animation='border' /></div>}>
+                        <LazyOutletWrapper />
+                    </Suspense>
+                </Col>
+            </Row>
+        </main>
+    </>
   )
 }
 

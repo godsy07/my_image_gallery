@@ -1,6 +1,7 @@
 import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 
 import './layout.styles.css'
+import Logo from '../../assets/images/logo.png';
 import { useAuth } from '../auth/AuthContext';
 
 const PageHeader = () => {
@@ -8,9 +9,18 @@ const PageHeader = () => {
 
   return (
     <>
-      <Navbar expand="lg" className='bg-success' sticky='top'>
+      <Navbar expand="lg" className='page-header' sticky='top'>
       <Container>
-        <Navbar.Brand href="/">Image Gallery</Navbar.Brand>
+        <Navbar.Brand className='d-flex align-items-center justify-content-center' href="/">
+          <img
+            src={Logo}
+            width="30"
+            height="30"
+            className="d-inline-block align-top"
+            alt="Image Gallery Logo"
+          />{" "}
+          Image Gallery
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse className="justify-content-end">
           <Nav
@@ -21,7 +31,7 @@ const PageHeader = () => {
             {!authUser && (
               <Nav.Link href="/login">Login</Nav.Link>
             )}
-            <NavDropdown title={`Logged User: ${authUser?authUser.name:""}`} id="navbarScrollingDropdown">
+            <NavDropdown title={`User: ${authUser?authUser.name.split(" ")[0]:""}`} id="navbarScrollingDropdown">
               <NavDropdown.Item href="/dashboard">
                 Dashboard
               </NavDropdown.Item>
