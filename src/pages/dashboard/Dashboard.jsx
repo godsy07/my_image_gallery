@@ -1,8 +1,8 @@
 import React from 'react'
-import UserContainerLayout from '../../components/layout/UserContainerLayout'
-import ImageDataList from '../../components/image-data-list/ImageDataList'
 import { BASE_URL } from '../../config/config'
 import { useAuth } from '../../components/auth/AuthContext'
+import ImageDataList from '../../components/image-data-list/ImageDataList'
+import UserContainerLayout from '../../components/layout/UserContainerLayout'
 
 const Dashboard = () => {
   const { authUser } = useAuth();

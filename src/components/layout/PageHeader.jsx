@@ -1,11 +1,28 @@
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 
 import './layout.styles.css'
 import Logo from '../../assets/images/logo.png';
 import { useAuth } from '../auth/AuthContext';
+import Swal from 'sweetalert2';
+import { useEffect } from 'react';
 
 const PageHeader = () => {
-  const { authUser } = useAuth();
+  const navigate = useNavigate();
+  const [cookies, removeCookie] = useCookies("my_api_token");
+  const { authUser, userLogout } = useAuth();
+
+  const handleUserLogout = async() => {
+    removeCookie("my_api_token");
+    userLogout();
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'You have been logged out.'
+    });
+    navigate("/");
+  }
 
   return (
     <>
@@ -28,18 +45,24 @@ const PageHeader = () => {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            {!authUser && (
+            {!authUser ? (
               <Nav.Link href="/login">Login</Nav.Link>
+            ) : (
+              <NavDropdown title={`User: ${authUser?authUser.name.split(" ")[0]:""}`} id="navbarScrollingDropdown">
+                <NavDropdown.Item href="/dashboard">
+                  Dashboard
+                </NavDropdown.Item>
+                <NavDropdown.Item href="#setting_page">
+                  My Settings
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={handleUserLogout}>
+                  Logout
+                </NavDropdown.Item>
+                {/* <NavDropdown.Item href="#setting_page">
+                  Logout
+                </NavDropdown.Item> */}
+              </NavDropdown>
             )}
-            <NavDropdown title={`User: ${authUser?authUser.name.split(" ")[0]:""}`} id="navbarScrollingDropdown">
-              <NavDropdown.Item href="/dashboard">
-                Dashboard
-              </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#setting_page">
-                My Settings
-              </NavDropdown.Item>
-            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Container>

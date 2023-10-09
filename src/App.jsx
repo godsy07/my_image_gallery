@@ -9,6 +9,7 @@ import './App.css'
 import ProtectedRoutes from './components/auth/ProtectedRoutes';
 import Dashboard from './pages/dashboard/Dashboard';
 import ToastContainerDiv from './components/wrapper/ToastContainerDiv';
+import Settings from './pages/settings/Settings';
 
 const queryClient = new QueryClient()
 
@@ -26,6 +27,7 @@ const App = () => {
 
               <Route path='/' element={<ProtectedRoutes accessible_to={['admin','user']} />}>
                 <Route path='dashboard' element={<Dashboard />} />
+                <Route path='settings' element={<Settings />} />
               </Route>
 
             </Routes>

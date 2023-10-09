@@ -1,11 +1,11 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import Swal from 'sweetalert2'
 import jwtDecode from 'jwt-decode'
 import { useCookies } from 'react-cookie'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { Button, Col, Nav, Navbar, Row, Spinner } from 'react-bootstrap'
 
 import { useAuth } from "../auth/AuthContext"
-import { Button, Col, Nav, Navbar, Row, Spinner } from 'react-bootstrap'
-import Swal from 'sweetalert2'
 
 const LazyOutletWrapper = lazy(() => import("../wrapper/OutletWrapper"))
 
@@ -121,13 +121,44 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
         }
       };
 
+      const handleUserLogout = async() => {
+        removeCookie("my_api_token");
+        userLogout();
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'You have been logged out.'
+        });
+        navigate("/");
+      }
+
   return (
     <>
         <main className='d-flex justify-content-between'>
-            <div ref={sidebardRef} className='bg-primary p-2 d-none d-sm-none d-md-flex d-lg-flex flex-column justify-content-center align-items-center' style={{ width: "250px", height: "100vh", position: "absolute" }}>
-                <Nav.Link as={Button} className='my-2 py-1 w-100 bg-light'>Dashboard</Nav.Link>
-                <Nav.Link as={Button} className='my-2 py-1 w-100 bg-light'>Settings</Nav.Link>
-                <Nav.Link as={Button} className='my-2 py-1 w-100 bg-light'>Logout</Nav.Link>
+            <div ref={sidebardRef} className='bg-primary p-2 d-none d-sm-none d-md-flex d-lg-flex flex-column justify-content-center align-items-center' style={{ width: "250px", height: "100vh", position: "absolute", fontSize: "20px" }}>
+                <NavLink
+                    to='/dashboard'
+                    className="my-2 p-2 w-100 text-center rounded"
+                    style={({ isActive }) => ({
+                        color: isActive ? '#fff' : '#545e6f',
+                        background: isActive ? '#7600dc' : '#f0f0f0',
+                    })}
+                >
+                    Dashboard
+                </NavLink>
+                <NavLink
+                    to='/settings'
+                    className="my-2 p-2 w-100 text-center rounded"
+                    style={({ isActive }) => ({
+                        color: isActive ? '#fff' : '#545e6f',
+                        background: isActive ? '#7600dc' : '#f0f0f0',
+                    })}
+                >
+                    Settings
+                </NavLink>
+                <Nav.Link className='my-2 py-0 w-100' onClick={handleUserLogout}>
+                    <Button className='w-100 text-dark bg-light' style={{ fontSize: "20px", fontWeight: "500" }}>Logout</Button>
+                </Nav.Link>
             </div>
             <div style={{ marginLeft: `${sideBarVisible?"250px":"0"}` }}>
                 <Row className='p-0 m-0'>
