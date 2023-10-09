@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   return (
     <UserContainerLayout>
-      <h6>My Images</h6>
+      <h5 className='text-center'>My Uploads</h5>
       <ImageDataList
         fetch_url={`${BASE_URL}/images/get-my-paginated-images/${authUser && authUser.id}`}
       />

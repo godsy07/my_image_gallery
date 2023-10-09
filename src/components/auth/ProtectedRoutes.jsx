@@ -1,21 +1,48 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import jwtDecode from 'jwt-decode'
 import { useCookies } from 'react-cookie'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from "../auth/AuthContext"
-import { Col, Row, Spinner } from 'react-bootstrap'
+import { Button, Col, Nav, Navbar, Row, Spinner } from 'react-bootstrap'
 import Swal from 'sweetalert2'
-import PageHeader from '../layout/PageHeader'
 
 const LazyOutletWrapper = lazy(() => import("../wrapper/OutletWrapper"))
 
 const ProtectedRoutes = ({ accessible_to=['user'] }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const sidebardRef = useRef(null);
+    const [sideBarVisible, setSideBarVisible] = useState(true);
     const [cookies, removeCookie] = useCookies("my_api_token");
-    
     const { authUser, userLogin, userLogout, isUserAuthenticated } = useAuth();
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      };
+    
+      useEffect(() => {
+        // Add event listener to listen for window resize
+        window.addEventListener('resize', handleResize);
+        if (window.innerWidth >= 768) {
+            setSideBarVisible(true);
+        } else {
+            setSideBarVisible(false);
+        }
+    
+        // Remove event listener when component unmounts
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      }, [window.innerWidth, window.innerHeight]);
+    
 
     useEffect(() => {
         if (cookies.my_api_token) {
@@ -56,6 +83,13 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[location.pathname, authUser])
 
+    useEffect(() => {
+        if (sidebardRef.current) {
+            checkVisibility()
+        }
+    },[sidebardRef.current])
+
+
     const checkUserHasPageAccess = (user_data) => {
         if (!userHasPageAccess(user_data.user_type)) {
             Swal.fire({
@@ -71,17 +105,39 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
         return accessible_to.includes(user_type)
     }
 
+    const checkVisibility = () => {
+        if (sidebardRef.current) {
+          const rect = sidebardRef.current.getBoundingClientRect();
+    
+          // Check if the element is in the viewport
+          if (
+            rect.width > 0 &&
+            rect.height > 0
+          ) {
+            setSideBarVisible(true);
+          } else {
+            setSideBarVisible(false);
+          }
+        }
+      };
+
   return (
     <>
-        <PageHeader />
-        <main className='main-div'>
-            <Row className='p-0 m-0'>
-                <Col className='p-0 m-0'>
-                    <Suspense fallback={<div><Spinner animation='border' /></div>}>
-                        <LazyOutletWrapper />
-                    </Suspense>
-                </Col>
-            </Row>
+        <main className='d-flex justify-content-between'>
+            <div ref={sidebardRef} className='bg-primary p-2 d-none d-sm-none d-md-flex d-lg-flex flex-column justify-content-center align-items-center' style={{ width: "250px", height: "100vh", position: "absolute" }}>
+                <Nav.Link as={Button} className='my-2 py-1 w-100 bg-light'>Dashboard</Nav.Link>
+                <Nav.Link as={Button} className='my-2 py-1 w-100 bg-light'>Settings</Nav.Link>
+                <Nav.Link as={Button} className='my-2 py-1 w-100 bg-light'>Logout</Nav.Link>
+            </div>
+            <div style={{ marginLeft: `${sideBarVisible?"250px":"0"}` }}>
+                <Row className='p-0 m-0'>
+                    <Col md={9} lg={10} className='p-0 m-0 w-100'>
+                        <Suspense fallback={<div><Spinner animation='border' /></div>}>
+                            <LazyOutletWrapper />
+                        </Suspense>
+                    </Col>
+                </Row>
+            </div>
         </main>
     </>
   )
