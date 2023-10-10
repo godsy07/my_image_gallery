@@ -160,7 +160,7 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
                     <Button className='w-100 text-dark bg-light' style={{ fontSize: "20px", fontWeight: "500" }}>Logout</Button>
                 </Nav.Link>
             </div>
-            <div style={{ marginLeft: `${sideBarVisible?"250px":"0"}` }}>
+            <div className='w-100' style={{ marginLeft: `${sideBarVisible?"250px":"0"}` }}>
                 <Row className='p-0 m-0'>
                     <Col md={9} lg={10} className='p-0 m-0 w-100'>
                         <Suspense fallback={<div><Spinner animation='border' /></div>}>
