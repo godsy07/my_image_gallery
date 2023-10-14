@@ -122,6 +122,16 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
       };
 
       const handleUserLogout = async() => {
+        //confirm if user is sure to logout
+        const confirmLogout = await Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Are you sure you want to logut?',
+            confirmButtonText: "Yes",
+            showCancelButton: true,
+            cancelButtonText: "No",
+        });
+        if (!confirmLogout.isConfirmed) return;
         removeCookie("my_api_token");
         userLogout();
         Swal.fire({
@@ -135,7 +145,7 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
   return (
     <>
         <main className='d-flex justify-content-between'>
-            <div ref={sidebardRef} className='bg-primary p-2 d-none d-sm-none d-md-flex d-lg-flex flex-column justify-content-center align-items-center' style={{ width: "250px", height: "100vh", position: "absolute", fontSize: "20px" }}>
+            <div ref={sidebardRef} className='bg-primary p-2 d-none d-sm-none d-md-flex d-lg-flex flex-column justify-content-center align-items-center' style={{ width: "250px", height: "100vh", position: "fixed", fontSize: "20px", overflowY: "scroll", overflowX: "hidden" }}>
                 <NavLink
                     to='/dashboard'
                     className="my-2 p-2 w-100 text-center rounded"
