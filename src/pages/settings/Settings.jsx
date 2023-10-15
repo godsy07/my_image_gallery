@@ -139,17 +139,26 @@ const Settings = () => {
       <Row className='m-0 p-0'>
         <Col xs={12} sm={6} md={6} lg={6}>
           <FormGroup className='mb-3'>
-            <Form.Label>New Password:</Form.Label>
-            <Form.Control type="password" name="new_password" value={userEditData?userEditData.new_password:""} onChange={handleEditDataChange} placeholder="Set up your new password" />
-          </FormGroup>
-        </Col>
-        <Col xs={12} sm={6} md={6} lg={6}>
-          <FormGroup className='mb-3'>
-            <Form.Label>Confirm Password:</Form.Label>
-            <Form.Control type="password" name="repeat_password" value={userEditData?userEditData.repeat_password:""} onChange={handleEditDataChange} placeholder="Set up new password" />
+            <Form.Check type="switch" label="Update Password?" checked={changePassword} onChange={() => setChangePassword(!changePassword)} />
           </FormGroup>
         </Col>
       </Row>
+      {changePassword && (
+        <Row className='m-0 p-0'>
+          <Col xs={12} sm={6} md={6} lg={6}>
+            <FormGroup className='mb-3'>
+              <Form.Label>New Password:</Form.Label>
+              <Form.Control type="password" name="new_password" value={userEditData?userEditData.new_password:""} onChange={handleEditDataChange} placeholder="Set up your new password" />
+            </FormGroup>
+          </Col>
+          <Col xs={12} sm={6} md={6} lg={6}>
+            <FormGroup className='mb-3'>
+              <Form.Label>Confirm Password:</Form.Label>
+              <Form.Control type="password" name="repeat_password" value={userEditData?userEditData.repeat_password:""} onChange={handleEditDataChange} placeholder="Set up new password" />
+            </FormGroup>
+          </Col>
+        </Row>
+      )}
       <Row className='m-0 p-0 mb-3'>
         <Col>
           <Button onClick={handleUpdateUserDetails}>{detailsUpdating?<Spinner animation='border' size='sm' />:"Update Details"}</Button>
