@@ -4,13 +4,14 @@ import { useCookies } from 'react-cookie';
 import { BASE_URL } from '../../config/config';
 import UserContainerLayout from '../../components/layout/UserContainerLayout'
 import { Row, Col, Form, FormGroup, Button, Spinner } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 
 const Settings = () => {
   const [cookies] = useCookies('my_api_token');
-  const [userData, setUserData] = useState(null);
   const [detailsUpdating, setDetailsUpdating] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
   const [userEditData, setUserEditData] = useState({
-    first_name: "", last_name: "", email: "", current_password: "", new_password: "", confirm_password: ""
+    id: "", first_name: "", last_name: "", email: "", current_password: "", new_password: "", repeat_password: ""
   });
 
   useEffect(() => {
@@ -30,8 +31,14 @@ const Settings = () => {
       })
       if (response.status === 200) {
         console.log("response.data.data: ", response.data.data);
-        setUserData(response.data.data);
-        setUserEditData(response.data.data);
+        const userData = response.data.data;
+        setUserEditData((prevData) => ({
+          user_id: userData._id,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          email: userData.email,
+          current_password: userData.current_password,
+        }));
       }
 
     } catch(e) {
@@ -49,11 +56,54 @@ const Settings = () => {
 
   const handleUpdateUserDetails = async(e) => {
     try {
-      console.log("update user details")
+      if (!(userEditData && userEditData.user_id)) return;
+      // validation needed to be added before api request
+
+      const updateObject = {
+        user_id: (userEditData && userEditData.user_id)?userEditData.user_id:"",
+        first_name: (userEditData && userEditData.first_name)?userEditData.first_name:"",
+        last_name: (userEditData && userEditData.last_name)?userEditData.last_name:"",
+        email: (userEditData && userEditData.email)?userEditData.email:"",
+        current_password: (userEditData && userEditData.current_password)?userEditData.current_password:"",
+        change_password: changePassword,
+      };
+      if (changePassword) {
+        updateObject.new_password = (userEditData && userEditData.new_password)?userEditData.new_password:"";
+        updateObject.repeat_password = (userEditData && userEditData.repeat_password)?userEditData.repeat_password:"";
+      }
+      const response = await axios.post(`${BASE_URL}/user/update-user`,
+        updateObject,
+        {
+          headers: {
+            'Authorization': `Bearer ${cookies.my_api_token}`,
+          },
+          withCredentials: true,
+        },
+      );
+      if (response.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: response.data.message,
+        });
+      }
+      
     } catch(e) {
       setDetailsUpdating(false)
-      if (e.response) console.log(e.response)
-      else console.log(e)
+      if (e.response) {
+        console.log(e.response.data)
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: e.response.data.message,
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: "Something went wrong.",
+        });
+      }
     }
   }
 
@@ -96,7 +146,7 @@ const Settings = () => {
         <Col xs={12} sm={6} md={6} lg={6}>
           <FormGroup className='mb-3'>
             <Form.Label>Confirm Password:</Form.Label>
-            <Form.Control type="password" name="confirm_password" value={userEditData?userEditData.confirm_password:""} onChange={handleEditDataChange} placeholder="Set up new password" />
+            <Form.Control type="password" name="repeat_password" value={userEditData?userEditData.repeat_password:""} onChange={handleEditDataChange} placeholder="Set up new password" />
           </FormGroup>
         </Col>
       </Row>
