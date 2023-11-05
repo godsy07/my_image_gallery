@@ -26,7 +26,6 @@ export const ToastProvider = ({ children }) => {
         );
         setToasts(updatedToasts);
       }, 10); // Check every 10 microsecond
-
     }
 
     return () => clearInterval(toastCleanupInterval);
