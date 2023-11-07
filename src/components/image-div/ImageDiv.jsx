@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Image } from 'react-bootstrap'
 import { useLocation } from 'react-router-dom';
-import { FaTimesCircle, FaTrashAlt } from 'react-icons/fa';
+import { FaEye, FaTimesCircle, FaTrashAlt } from 'react-icons/fa';
 
 import './image-div.styles.css'
 import { useAuth } from '../auth/AuthContext';
@@ -12,8 +12,9 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
     const { authUser } = useAuth();
     const { addToast } = useToast();
     const location = useLocation();
-    const [imageModalOpen, setImageModalOpen] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [imageModalOpen, setImageModalOpen] = useState(false);
 
     const openImageModalOverlay = (image) => {
         setSelectedImage(image);
@@ -36,16 +37,32 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
         }
     }
 
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+    };
+    
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
   return (
     <>
-        <div className='image-div cursor-pointer' style={{ position: "relative" }}>
-        {/* <div className='image-div cursor-pointer' onClick={() => openImageModalOverlay(image_data)} style={{ position: "relative" }}> */}
-            {authUser && location.pathname === "/dashboard" && (
-                <div style={{ position: 'absolute', top: "5px", right: "5px" }}>
-                    <FaTrashAlt onClick={() => handleDeleteImage(image_data._id)} />
+        <div 
+            className='image-div cursor-pointer hover-container'
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            style={{ position: "relative" }}
+        >
+            <Image className='image-area' src={`${image_data.file_path}`} />
+            {isHovered && (
+                <div className="overlay d-flex flex-column justify-content-between">
+                    <div className='w-100 px-2 d-flex justify-content-between'>
+                        <div><FaEye onClick={() => openImageModalOverlay(image_data)} /></div>
+                        <div><FaTrashAlt className='text-danger' onClick={() => handleDeleteImage(image_data._id)} /></div>
+                    </div>
+                    <div className='w-100 text-center'>Hi</div>
                 </div>
             )}
-            <Image className='image-area' src={`${image_data.file_path}`} />
         </div>
         {imageModalOpen && (
             <div className='selected-image-overlay-div d-flex justify-content-center'>
