@@ -58,7 +58,9 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                 <div className="overlay d-flex flex-column justify-content-between">
                     <div className='w-100 px-2 d-flex justify-content-between'>
                         <div><FaEye onClick={() => openImageModalOverlay(image_data)} /></div>
-                        <div><FaTrashAlt className='text-danger' onClick={() => handleDeleteImage(image_data._id)} /></div>
+                        {authUser && location.pathname === "/dashboard" && (
+                            <div><FaTrashAlt className='text-danger' onClick={() => handleDeleteImage(image_data._id)} /></div>
+                        )}
                     </div>
                     <div className='w-100 text-center'>Hi</div>
                 </div>
