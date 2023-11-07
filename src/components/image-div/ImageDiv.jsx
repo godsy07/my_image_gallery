@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { Image } from 'react-bootstrap'
+import { useLocation } from 'react-router-dom';
+import { FaTimesCircle, FaTrashAlt } from 'react-icons/fa';
 
 import './image-div.styles.css'
-import { FaTimesCircle } from 'react-icons/fa';
+import { useAuth } from '../auth/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { handleDeleteMyImageFromList } from '../../api/apiCalls';
 
-const ImageDiv = ({ image_data }) => {
+const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
+    const { authUser } = useAuth();
+    const { addToast } = useToast();
+    const location = useLocation();
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -18,9 +25,27 @@ const ImageDiv = ({ image_data }) => {
         setImageModalOpen(false);
     };
 
+    const handleDeleteImage = async(image_id) => {
+        const response = await handleDeleteMyImageFromList(image_id);
+        console.log("response: ", response)
+        if (response.status) {
+            addToast({ type: "success", heading: "Success", message: response.message });
+            // refetch image list
+            refreshFetchURL && refreshFetchURL();
+        } else {
+            addToast({ type: "error", heading: "Error", message: response.message });
+        }
+    }
+
   return (
     <>
-        <div className='image-div cursor-pointer' onClick={() => openImageModalOverlay(image_data)}>
+        <div className='image-div cursor-pointer' style={{ position: "relative" }}>
+        {/* <div className='image-div cursor-pointer' onClick={() => openImageModalOverlay(image_data)} style={{ position: "relative" }}> */}
+            {authUser && location.pathname === "/dashboard" && (
+                <div style={{ position: 'absolute', top: "5px", right: "5px" }}>
+                    <FaTrashAlt onClick={() => handleDeleteImage(image_data._id)} />
+                </div>
+            )}
             <Image className='image-area' src={`${image_data.file_path}`} />
         </div>
         {imageModalOpen && (

@@ -101,6 +101,7 @@ const calculatePageSeries = (page_no, page_count) => {
 };
 
 const useFetchImageDataList = ({
+  fetchCount = 0,
   fetch_url = "",
   data = [],
   page_limit = 10,
@@ -157,7 +158,7 @@ const useFetchImageDataList = ({
       setPageCount(tableInfo.total_pages);
       setTotalDataCount(tableInfo.total_items);
     }
-  }, [fetch_url, page_limit, data, page_no, sort_data]);
+  }, [fetchCount, fetch_url, page_limit, data, page_no, sort_data]);
 
   // According to fetched page_count, build page_count_series
   useMemo(() => {

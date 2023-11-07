@@ -5,12 +5,13 @@ import "./image-data-list.styles.css";
 import ImageDiv from "../image-div/ImageDiv";
 import useFetchImageDataList from "../../hooks/useFetchImageDataList";
 
-const ImageDataList = ({ user_type = "single", image_type="public", fetch_url="", image_list = [], loading = false, page_limit=10 }) => {
+const ImageDataList = ({ user_type = "single", image_type="public", fetch_url="", image_list = [], loading = false, page_limit=10, fetch_count=0, refreshFetchURL= () => {} }) => {
   const [imageList, setImageList] = useState([]);
   const [imageListLoading, setImageListLoading] = useState(loading);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [pageNo, setPageNo] = useState(1);
+  const [fetchCount, setFetchCount] = useState(0);
   const [pageLimit, setPageLimit] = useState(page_limit);
   const [sortDataArray, setSortDataArray] = useState([]);
   const [pageNoSeries, setPageNoSeries] = useState([1]);
@@ -28,6 +29,7 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
     total_data_count,
     data_loading,
   } = useFetchImageDataList({
+    fetchCount,
     fetch_url,
     user_type,
     image_type,
@@ -57,6 +59,11 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
     setPageLimit(page_limit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page_limit]);
+
+  useEffect(() => {
+    setFetchCount(fetch_count);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetch_count]);
 
   useEffect(() => {
     if (fetch_url === "") setImageList([...image_list]);
@@ -120,7 +127,7 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
         pageData.length > 0 && (
           <div className='image-grid-area'>
             {pageData.map((img, idx) => (
-              <ImageDiv key={idx} image_data={img} />
+              <ImageDiv key={idx} image_data={img} refreshFetchURL={refreshFetchURL} />
             ))}
           </div>
         )

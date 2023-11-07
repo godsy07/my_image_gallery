@@ -1,5 +1,7 @@
 import axios from "axios";
-import { isHTML } from "../utils/functions";
+import Swal from "sweetalert2";
+import { BASE_URL } from "../config/config";
+import { getMyApiCookieToken, isHTML } from "../utils/functions";
 
 export const fetchPaginatedData = async (fetch_url) => {
 	let errorResponseObject = { status: false, data: [], total_pages: 1, total_items: 0, page_no: 1, message: "Something went wrong." };
@@ -27,4 +29,38 @@ export const fetchPaginatedData = async (fetch_url) => {
 		}
         return errorResponseObject;
 	}
+}
+
+export const handleDeleteMyImageFromList = async(image_id) => {
+	let responseObject = {};
+	const apiTokenCookie = getMyApiCookieToken();
+	try {
+
+		if (!image_id) return;
+		const confirmDelete = await Swal.fire({
+			icon: 'warning',
+			title: 'Warning',
+			text: 'Are you sure to delete this image?',
+			showDenyButton: true,
+			denyButtonText: 'No',
+			confirmButtonText: 'Yes',
+		});
+		if (!confirmDelete.isConfirmed) return;
+		const response = await axios.get(`${BASE_URL}/images/delete-image/${image_id}`,
+			{
+				headers: {
+					'Authorization': `Bearer ${apiTokenCookie}`,
+				},
+				withCredentials: true
+			}
+		);
+		responseObject = response.data;
+	} catch(e) {
+		if (e.response) {
+			responseObject = e.response.data;
+		} else {
+			responseObject = { status: false, message: 'Something went wrong!!!' };
+		}
+	}
+	return responseObject;
 }

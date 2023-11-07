@@ -11,7 +11,7 @@ import { isValidEmail } from '../../utils/functions';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const [cookies, setCookie] = useCookies("my_api_token");
+    const [cookies, setCookie] = useCookies();
 
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");

@@ -13,3 +13,9 @@ export const isHTML = (content) => {
     // This indicates that the content was successfully parsed as HTML
     return tempElement.innerHTML !== content;
 }
+
+export const getMyApiCookieToken = () => {
+	const myCookie = document.cookie;
+	const apiTokenCookie = myCookie.split('; ').find((cookie) => cookie.startsWith('my_api_token=')).split('=')[1];
+    return apiTokenCookie;
+}

@@ -5,10 +5,19 @@ import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { ToastProvider } from './context/ToastContext'
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+if (process.env.NODE_ENV === "production") {
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </React.StrictMode>,
+  )
+} else {
+  ReactDOM.createRoot(document.getElementById('root')).render(
     <ToastProvider>
       <App />
-    </ToastProvider>
-  </React.StrictMode>,
-)
+    </ToastProvider>,
+  )
+}
+
