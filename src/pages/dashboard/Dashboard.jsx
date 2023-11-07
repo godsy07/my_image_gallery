@@ -1,14 +1,15 @@
+import axios from 'axios'
 import React, { useState } from 'react'
 import { ImUpload } from 'react-icons/im'
+import { useCookies } from 'react-cookie'
+import { FaRegTimesCircle } from 'react-icons/fa'
 import { Button, Col, Form, FormGroup, Image, Modal, Row, Badge } from 'react-bootstrap'
+
 import { BASE_URL } from '../../config/config'
 import { useToast } from '../../context/ToastContext'
 import { useAuth } from '../../components/auth/AuthContext'
 import ImageDataList from '../../components/image-data-list/ImageDataList'
 import UserContainerLayout from '../../components/layout/UserContainerLayout'
-import { FaRegTimesCircle } from 'react-icons/fa'
-import axios from 'axios'
-import { useCookies } from 'react-cookie'
 
 const Dashboard = () => {
   const { authUser } = useAuth();

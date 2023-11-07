@@ -27,7 +27,6 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
 
     const handleDeleteImage = async(image_id) => {
         const response = await handleDeleteMyImageFromList(image_id);
-        console.log("response: ", response)
         if (response.status) {
             addToast({ type: "success", heading: "Success", message: response.message });
             // refetch image list

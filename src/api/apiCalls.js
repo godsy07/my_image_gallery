@@ -64,3 +64,51 @@ export const handleDeleteMyImageFromList = async(image_id) => {
 	}
 	return responseObject;
 }
+
+export const getUserDetails = async(user_id) => {
+	let responseObject = {};
+	const apiTokenCookie = getMyApiCookieToken();
+	try {
+		const response = await axios.get(`${BASE_URL}/user/get-user-details/${user_id}`,
+			{
+				headers: {
+				'Authorization': `Bearer ${apiTokenCookie}`,
+				},
+				withCredentials: true,
+			}
+		);
+		responseObject = response.data;
+	} catch(e) {
+		if (e.response) {
+			responseObject = e.response.data;
+		} else {
+			responseObject = { status: false, message: 'Something went wrong!!!' };
+		}
+	}
+	return responseObject;
+}
+
+export const updateUserDetails = async(updateObject) => {
+	let responseObject = {};
+	const apiTokenCookie = getMyApiCookieToken();
+	try {
+		if (!updateObject) return;
+		const response = await axios.post(`${BASE_URL}/user/update-user`,
+		  updateObject,
+		  {
+			headers: {
+			  'Authorization': `Bearer ${apiTokenCookie}`,
+			},
+			withCredentials: true,
+		  },
+		);
+		responseObject = response.data;
+	} catch(e) {
+		if (e.response) {
+			responseObject = e.response.data;
+		} else {
+			responseObject = { status: false, message: 'Something went wrong!!!' };
+		}
+	  }
+	  return responseObject;
+}
