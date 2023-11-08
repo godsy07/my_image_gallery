@@ -48,7 +48,7 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
   return (
     <>
         <div 
-            className='image-div cursor-pointer hover-container'
+            className='image-div w-100 mb-3 cursor-pointer hover-container'
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             style={{ position: "relative" }}
@@ -62,7 +62,10 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                             <div><FaTrashAlt className='text-danger' onClick={() => handleDeleteImage(image_data._id)} /></div>
                         )}
                     </div>
-                    <div className='w-100 text-center'>Hi</div>
+                    <div className='w-100 mb-4 text-center d-flex flex-column justify-content-center'>
+                        <div className='overlay-image-title'>{image_data.title}</div>
+                        <div className='overlay-image-description'>{image_data.description}</div>
+                    </div>
                 </div>
             )}
         </div>

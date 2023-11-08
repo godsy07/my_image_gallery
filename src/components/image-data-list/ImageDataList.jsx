@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Spinner } from "react-bootstrap";
+import { Button, Col, Row, Spinner } from "react-bootstrap";
 
 import "./image-data-list.styles.css";
 import ImageDiv from "../image-div/ImageDiv";
@@ -125,11 +125,13 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
       ) : (
         pageData &&
         pageData.length > 0 && (
-          <div className='image-grid-area'>
+          <Row className="p-2">
             {pageData.map((img, idx) => (
-              <ImageDiv key={idx} image_data={img} refreshFetchURL={refreshFetchURL} />
+              <Col key={idx} xs={12} sm={6} md={4} lg={3}>
+                <ImageDiv key={idx} image_data={img} refreshFetchURL={refreshFetchURL} />
+              </Col>
             ))}
-          </div>
+          </Row>
         )
       )}
 

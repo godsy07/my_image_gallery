@@ -35,3 +35,14 @@
     max-height: calc(100vh - 50px);
     background-color: rgb(117, 114, 114);
 }
+
+.overlay-image-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.overlay-image-description {
+    font-size: 12px;
+    line-height: 1.2em;
+    overflow: hidden;
+}
