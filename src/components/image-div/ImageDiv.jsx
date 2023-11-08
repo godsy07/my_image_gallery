@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState } from 'react';
 import { Image } from 'react-bootstrap'
 import { useLocation } from 'react-router-dom';
@@ -27,11 +28,21 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
     };
 
     const handleDeleteImage = async(image_id) => {
+		if (!image_id) return;
+		const confirmDelete = await Swal.fire({
+			icon: 'warning',
+			title: 'Warning',
+			text: 'Are you sure to delete this image?',
+			showDenyButton: true,
+			denyButtonText: 'No',
+			confirmButtonText: 'Yes',
+		});
+		if (!confirmDelete.isConfirmed) return;
         const response = await handleDeleteMyImageFromList(image_id);
         if (response.status) {
-            addToast({ type: "success", heading: "Success", message: response.message });
             // refetch image list
             refreshFetchURL && refreshFetchURL();
+            addToast({ type: "success", heading: "Success", message: response.message });
         } else {
             addToast({ type: "error", heading: "Error", message: response.message });
         }

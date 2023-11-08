@@ -1,10 +1,6 @@
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import { useCookies } from 'react-cookie'
 import { useEffect, useState } from 'react'
 import { Row, Col, Form, FormGroup, Button, Spinner } from 'react-bootstrap';
 
-import { BASE_URL } from '../../config/config';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../components/auth/AuthContext';
 import { getUserDetails, updateUserDetails } from '../../api/apiCalls';
@@ -13,7 +9,6 @@ import UserContainerLayout from '../../components/layout/UserContainerLayout'
 const Settings = () => {
   const { authUser } = useAuth();
   const { addToast } = useToast();
-  const [cookies] = useCookies('my_api_token');
   const [detailsUpdating, setDetailsUpdating] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
   const [userEditData, setUserEditData] = useState({

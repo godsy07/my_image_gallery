@@ -1,5 +1,4 @@
 import axios from "axios";
-import Swal from "sweetalert2";
 import { BASE_URL } from "../config/config";
 import { getMyApiCookieToken, isHTML } from "../utils/functions";
 
@@ -31,29 +30,27 @@ export const fetchPaginatedData = async (fetch_url) => {
 	}
 }
 
-export const handleDeleteMyImageFromList = async(image_id) => {
+export const getRequest = async ({ fetch_url="", auth=false }) => {
 	let responseObject = {};
-	const apiTokenCookie = getMyApiCookieToken();
+	let apiTokenCookie;
+	if (auth) {
+		apiTokenCookie = getMyApiCookieToken();
+		if (!apiTokenCookie) return;
+	}
 	try {
-
-		if (!image_id) return;
-		const confirmDelete = await Swal.fire({
-			icon: 'warning',
-			title: 'Warning',
-			text: 'Are you sure to delete this image?',
-			showDenyButton: true,
-			denyButtonText: 'No',
-			confirmButtonText: 'Yes',
-		});
-		if (!confirmDelete.isConfirmed) return;
-		const response = await axios.get(`${BASE_URL}/images/delete-image/${image_id}`,
-			{
-				headers: {
-					'Authorization': `Bearer ${apiTokenCookie}`,
-				},
-				withCredentials: true
-			}
-		);
+		let response;
+		if (!apiTokenCookie) {
+			response = await axios.get(fetch_url);
+		} else {
+			response = await axios.get(fetch_url,
+				{
+					headers: {
+						'Authorization': `Bearer ${apiTokenCookie}`,
+					},
+					withCredentials: true
+				}
+			);
+		}
 		responseObject = response.data;
 	} catch(e) {
 		if (e.response) {
@@ -63,52 +60,50 @@ export const handleDeleteMyImageFromList = async(image_id) => {
 		}
 	}
 	return responseObject;
+}
+
+export const postRequest = async ({ fetch_url="", post_object={}, auth=false }) => {
+	let responseObject = {};
+	let apiTokenCookie;
+	if (auth) {
+		apiTokenCookie = getMyApiCookieToken();
+		if (!apiTokenCookie) return;
+	}
+	try {
+		let response;
+		if (!apiTokenCookie) {
+			response = await axios.post(fetch_url, post_object);
+		} else {
+			response = await axios.post(fetch_url,
+				post_object,
+				{
+					headers: {
+						'Authorization': `Bearer ${apiTokenCookie}`,
+					},
+					withCredentials: true
+				}
+			);
+		}
+		responseObject = response.data;
+	} catch(e) {
+		if (e.response) {
+			responseObject = e.response.data;
+		} else {
+			responseObject = { status: false, message: 'Something went wrong!!!' };
+		}
+	}
+	return responseObject;
+}
+
+export const handleDeleteMyImageFromList = async(image_id) => {
+	return await getRequest({ fetch_url: `${BASE_URL}/images/delete-image/${image_id}`, auth: true });
 }
 
 export const getUserDetails = async(user_id) => {
-	let responseObject = {};
-	const apiTokenCookie = getMyApiCookieToken();
-	try {
-		const response = await axios.get(`${BASE_URL}/user/get-user-details/${user_id}`,
-			{
-				headers: {
-				'Authorization': `Bearer ${apiTokenCookie}`,
-				},
-				withCredentials: true,
-			}
-		);
-		responseObject = response.data;
-	} catch(e) {
-		if (e.response) {
-			responseObject = e.response.data;
-		} else {
-			responseObject = { status: false, message: 'Something went wrong!!!' };
-		}
-	}
-	return responseObject;
+	return await getRequest({ fetch_url: `${BASE_URL}/user/get-user-details/${user_id}`, auth: true });
 }
 
 export const updateUserDetails = async(updateObject) => {
-	let responseObject = {};
-	const apiTokenCookie = getMyApiCookieToken();
-	try {
-		if (!updateObject) return;
-		const response = await axios.post(`${BASE_URL}/user/update-user`,
-		  updateObject,
-		  {
-			headers: {
-			  'Authorization': `Bearer ${apiTokenCookie}`,
-			},
-			withCredentials: true,
-		  },
-		);
-		responseObject = response.data;
-	} catch(e) {
-		if (e.response) {
-			responseObject = e.response.data;
-		} else {
-			responseObject = { status: false, message: 'Something went wrong!!!' };
-		}
-	  }
-	  return responseObject;
+	if (!updateObject) return;
+	return await postRequest({ fetch_url: `${BASE_URL}/user/update-user`, post_object: updateObject, auth: true });
 }

@@ -66,10 +66,10 @@ const Dashboard = () => {
         }
       );
       if (response.status === 200) {
+        addToast({ type: "success", heading: "Success", message: response.data.message });
         setImageFetchCount(imageFetchCount + 1)
         resetAddImageValues();
         handleCloseUploadImageDiv();
-        addToast({ type: "success", heading: "Success", message: response.data.message });
       }
 
     } catch(e) {
