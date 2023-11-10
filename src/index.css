@@ -79,3 +79,22 @@ a {
   opacity: 1;
 }
 /*** Overlay Container CSS Ends ***/
+
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: #272727;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a3a1a1;
+}
+
+::-webkit-scrollbar-track {
+  /* background-color: #f1f1f1; */
+  background-color: #c47f7f;
+}
