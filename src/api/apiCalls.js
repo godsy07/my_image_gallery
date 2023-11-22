@@ -30,7 +30,7 @@ export const fetchPaginatedData = async (fetch_url) => {
 	}
 }
 
-export const getRequest = async ({ fetch_url="", auth=false }) => {
+export const apiRequest = async ({ fetch_url="", method= 'GET', post_object={}, auth=false, multipart=false }) => {
 	let responseObject = {};
 	let apiTokenCookie;
 	if (auth) {
@@ -39,17 +39,46 @@ export const getRequest = async ({ fetch_url="", auth=false }) => {
 	}
 	try {
 		let response;
-		if (!apiTokenCookie) {
-			response = await axios.get(fetch_url);
+		if (method === "GET") {
+			if (!apiTokenCookie) {
+				response = await axios.get(fetch_url);
+			} else {
+				response = await axios.get(fetch_url,
+					{
+						headers: {
+							'Authorization': `Bearer ${apiTokenCookie}`,
+						},
+						withCredentials: true
+					}
+				);
+			}
 		} else {
-			response = await axios.get(fetch_url,
-				{
-					headers: {
-						'Authorization': `Bearer ${apiTokenCookie}`,
-					},
-					withCredentials: true
+			if (!apiTokenCookie) {
+				response = await axios.post(fetch_url, post_object);
+			} else {
+				if (multipart) {
+					response = await axios.post(fetch_url,
+						post_object,
+						{
+							headers: {
+								'Content-Type': 'multipart/form-data',
+								'Authorization': `Bearer ${apiTokenCookie}`,
+							},
+							withCredentials: true
+						}
+					);
+				} else {
+					response = await axios.post(fetch_url,
+						post_object,
+						{
+							headers: {
+								'Authorization': `Bearer ${apiTokenCookie}`,
+							},
+							withCredentials: true
+						}
+					);
 				}
-			);
+			}
 		}
 		responseObject = response.data;
 	} catch(e) {
@@ -62,48 +91,25 @@ export const getRequest = async ({ fetch_url="", auth=false }) => {
 	return responseObject;
 }
 
-export const postRequest = async ({ fetch_url="", post_object={}, auth=false }) => {
-	let responseObject = {};
-	let apiTokenCookie;
-	if (auth) {
-		apiTokenCookie = getMyApiCookieToken();
-		if (!apiTokenCookie) return;
-	}
-	try {
-		let response;
-		if (!apiTokenCookie) {
-			response = await axios.post(fetch_url, post_object);
-		} else {
-			response = await axios.post(fetch_url,
-				post_object,
-				{
-					headers: {
-						'Authorization': `Bearer ${apiTokenCookie}`,
-					},
-					withCredentials: true
-				}
-			);
-		}
-		responseObject = response.data;
-	} catch(e) {
-		if (e.response) {
-			responseObject = e.response.data;
-		} else {
-			responseObject = { status: false, message: 'Something went wrong!!!' };
-		}
-	}
-	return responseObject;
+export const getUserImageDetails = async (image_id) => {
+	if (!image_id) return;
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-details/${image_id}`, auth: true });
+}
+
+export const updateUserImageDetails = async (updateObject) => {
+	if (!updateObject) return;
+	return await apiRequest({ method: 'POST', fetch_url: `${BASE_URL}/images/update-image-details`, post_object: updateObject, auth: true, multipart: true });
 }
 
 export const handleDeleteMyImageFromList = async(image_id) => {
-	return await getRequest({ fetch_url: `${BASE_URL}/images/delete-image/${image_id}`, auth: true });
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/delete-image/${image_id}`, auth: true });
 }
 
 export const getUserDetails = async(user_id) => {
-	return await getRequest({ fetch_url: `${BASE_URL}/user/get-user-details/${user_id}`, auth: true });
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/user/get-user-details/${user_id}`, auth: true });
 }
 
 export const updateUserDetails = async(updateObject) => {
 	if (!updateObject) return;
-	return await postRequest({ fetch_url: `${BASE_URL}/user/update-user`, post_object: updateObject, auth: true });
+	return await apiRequest({ method: 'POST', fetch_url: `${BASE_URL}/user/update-user`, post_object: updateObject, auth: true });
 }
