@@ -121,7 +121,7 @@ const ImageDataList = ({ user_type = "single", image_type="public", fetch_url=""
           <Spinner animation='grow' className='mx-1' />
         </>
       ) : pageData && pageData.length === 0 ? (
-        <p className='mt-5'>No image exsits.</p>
+        <p className='mt-5 empty-image-text'>No image exsits.</p>
       ) : (
         pageData &&
         pageData.length > 0 && (

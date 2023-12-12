@@ -154,7 +154,7 @@ const Dashboard = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-  
+
       <UserContainerLayout>
         <h5 className='text-center'>My Uploads</h5>
         <div className='mx-2 p-1 d-flex justify-content-end'>

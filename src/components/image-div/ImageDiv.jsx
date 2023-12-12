@@ -2,12 +2,12 @@ import Swal from 'sweetalert2';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Image, Button, Modal, Row, FormGroup, Form, Col, Badge } from 'react-bootstrap'
-import { FaEdit, FaEye, FaTimesCircle, FaTrashAlt, FaRegTimesCircle } from 'react-icons/fa';
+import { FaEdit, FaEye, FaTimesCircle, FaTrashAlt, FaRegTimesCircle, FaCheckCircle } from 'react-icons/fa';
 
 import './image-div.styles.css'
 import { useAuth } from '../auth/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { getUserImageDetails, handleDeleteMyImageFromList, updateUserImageDetails } from '../../api/apiCalls';
+import { getUserImageDetails, handleDeleteMyImageFromList, updateImageApprovalStatus, updateUserImageDetails } from '../../api/apiCalls';
 import { BASE_UPLOAD_URL } from '../../config/config';
 
 const ImageDiv = ({ image_data, refreshFetchURL = () => { } }) => {
@@ -138,6 +138,16 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => { } }) => {
     setTagList(prevArray =>  prevArray.filter((_, index) => index !== indexToRemove));
   }
 
+  const handleImageApproval = async(image_id, approval_status) => {
+    const response = await updateImageApprovalStatus({ image_id, status: approval_status });
+    if (response.status) {
+        refreshFetchURL && refreshFetchURL();
+        addToast({ type: "success", heading: "Success", message: response.message });
+    } else {
+        addToast({ type: "error", heading: "Error", message: response.message });
+    }
+  }
+
     return (
         <>
             <div
@@ -159,12 +169,25 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => { } }) => {
                             <div className='overlay-image-title'>{image_data.title}</div>
                             <div className='overlay-image-description'>{image_data.description}</div>
                             {authUser && location.pathname === "/dashboard" && (
-                                <div className='overlay-options text-center'>
-                                    <Button size='sm' onClick={(e) => handleViewImageEditModal(e, image_data)}>
-                                        <span className='d-flex justify-content-center align-items-center'>
-                                            <span className='me-1'>Edit</span><FaEdit />
-                                        </span>
-                                    </Button>
+                                <>
+                                    <div className='overlay-image-description'>
+                                        <Badge className='mt-2' bg={image_data.status === 'pending'?'warning':image_data.status === 'approved'?'success':'danger'} style={{ fontSize: '12px' }}>
+                                            Approval Status: {image_data.status}
+                                        </Badge>
+                                    </div>
+                                    <div className='overlay-options text-center'>
+                                        <Button size='sm' onClick={(e) => handleViewImageEditModal(e, image_data)}>
+                                            <span className='d-flex justify-content-center align-items-center'>
+                                                <span className='me-1'>Edit</span><FaEdit />
+                                            </span>
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
+                            {authUser && authUser.user_type === 'admin' && location.pathname === "/pending-images" && (
+                                <div>
+                                    <FaCheckCircle className='me-1 text-primary' onClick={() => handleImageApproval(image_data._id,'approved')} />
+                                    <FaTimesCircle className='text-danger' onClick={() => handleImageApproval(image_data._id,'rejected')} />
                                 </div>
                             )}
                         </div>

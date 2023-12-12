@@ -113,3 +113,8 @@ export const updateUserDetails = async(updateObject) => {
 	if (!updateObject) return;
 	return await apiRequest({ method: 'POST', fetch_url: `${BASE_URL}/user/update-user`, post_object: updateObject, auth: true });
 }
+
+export const updateImageApprovalStatus = async(updateObject) => {
+	if (!updateObject) return;
+	return await apiRequest({ method: 'POST', fetch_url: `${BASE_URL}/images/change-image-status`, post_object: updateObject, auth: true });
+}

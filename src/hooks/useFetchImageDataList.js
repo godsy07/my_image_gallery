@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { fetchPaginatedData } from "../api/apiCalls";
 
 const fetchPageInfoFromImageDataList = (
@@ -111,6 +112,7 @@ const useFetchImageDataList = ({
   search_term = "",
   sort_data = [],
 }) => {
+  const location = useLocation();
   const [pageData, setPageData] = useState([]);
   const [pageCount, setPageCount] = useState(1);
   const [pageNumber, setPageNumber] = useState(1);
@@ -139,6 +141,7 @@ const useFetchImageDataList = ({
         ${fetch_url}?search_term=${search_term}&page_no=${page_no}&page_limit=${page_limit}
         &user_type=${user_type}&image_type=${image_type}&sort_data=${JSON.stringify(sort_data)}
         `;
+      if (location.pathname === "/pending-images") new_url += `&image_status=pending`;
       setPageDataLoading(true);
       processedData = await fetchPaginatedData(new_url);
       if (processedData) {

@@ -166,6 +166,18 @@ const ProtectedRoutes = ({ accessible_to=['user'] }) => {
                 >
                     Settings
                 </NavLink>
+                {authUser && authUser.user_type === "admin" && (
+                    <NavLink
+                        to='/pending-images'
+                        className="my-2 p-2 w-100 text-center rounded"
+                        style={({ isActive }) => ({
+                            color: isActive ? '#fff' : '#545e6f',
+                            background: isActive ? '#7600dc' : '#f0f0f0',
+                        })}
+                    >
+                        Pending Images
+                    </NavLink>
+                )}
                 <Nav.Link className='my-2 py-0 w-100' onClick={handleUserLogout}>
                     <Button className='w-100 text-dark bg-light' style={{ fontSize: "20px", fontWeight: "500" }}>Logout</Button>
                 </Nav.Link>
