@@ -91,6 +91,16 @@ export const apiRequest = async ({ fetch_url="", method= 'GET', post_object={}, 
 	return responseObject;
 }
 
+export const toggleUserImageLike = async (image_id) => {
+	if (!image_id) return;
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images//toggle-image-like/${image_id}`, auth: true });
+}
+
+export const getUserImageReactions = async (image_id) => {
+	if (!image_id) return;
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-reactions/${image_id}` });
+}
+
 export const getUserImageDetails = async (image_id) => {
 	if (!image_id) return;
 	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-details/${image_id}`, auth: true });
