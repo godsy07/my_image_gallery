@@ -12,6 +12,12 @@
     object-fit: contain;
 }
 
+.selected-image-area {
+    display: flex;
+    flex-direction: row;
+    padding: 0 30px;
+}
+
 .selected-image-overlay-div {
     padding: 30px 20px;
     position: fixed;
@@ -29,16 +35,58 @@
     position: absolute;
 }
 
-.selected-image-overlay-div .selected-image {
+.selected-image-overlay-div .selected-image-area {
     z-index: 10000;
     object-fit: contain;
     max-height: calc(100vh - 50px);
     background-color: rgb(117, 114, 114);
 }
 
+/* .selected-image-info {
+    border-bottom: 1px solid rgb(119, 119, 119);
+} */
+
+.selected-image-title{
+    font-weight: 600;
+    font-size: 18px;
+}
+.selected-image-description {
+    font-size: 14px;
+}
+
+.selected-image-stats {
+    font-size: 0.7rem;
+    /* border-top: 1px solid rgba(160, 160, 160, 0.747); */
+    border-bottom: 1px solid rgba(160, 160, 160, 0.747);
+}
+
 .overlay-image-title {
     font-size: 14px;
     font-weight: 600;
+}
+
+.comment-sender {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.comment-box {
+    font-size: 0.8rem;
+    border: 1px solid rgba(160, 160, 160, 0.747);
+}
+
+.comment-stats-icon {
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.comment-date-heading {
+    font-size: 0.77rem;
+    border-bottom: 1px solid rgba(160, 160, 160, 0.747);
+}
+
+.comment-relative-time {
+    font-size: 0.68rem;
 }
 
 .overlay-image-description {
