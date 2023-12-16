@@ -75,6 +75,12 @@
     border: 1px solid rgba(160, 160, 160, 0.747);
 }
 
+.comment-box-bg {
+    background-color: rgb(245, 245, 245);
+}
+.my-comment-box-bg {
+    background-color: rgb(222, 252, 248);
+}
 .comment-stats-icon {
     font-size: 1.8rem;
     cursor: pointer;

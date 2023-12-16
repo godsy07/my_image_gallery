@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { RiThumbUpFill, RiThumbUpLine } from "react-icons/ri";
@@ -13,6 +13,7 @@ import {
   Col,
   Badge,
   Container,
+  InputGroup,
 } from "react-bootstrap";
 import {
   FaEdit,
@@ -21,6 +22,7 @@ import {
   FaTrashAlt,
   FaRegTimesCircle,
   FaCheckCircle,
+  FaPaperPlane,
 } from "react-icons/fa";
 
 import "./image-div.styles.css";
@@ -47,6 +49,7 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
   const { authUser } = useAuth();
   const { addToast } = useToast();
   const location = useLocation();
+  const commentBoxRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -58,6 +61,14 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
   const [imageTagList, setImageTagList] = useState([]);
   const [imageDescription, setImageDescription] = useState("");
   const [updatedImage, setUpdatedImage] = useState(null);
+  const [commentText, setCommentText] = useState("");
+  const [commentBoxHeight, setCommentBoxHeight] = useState(0);
+
+  useEffect(() => {
+    if (commentBoxRef.current) {
+      setCommentBoxHeight(commentBoxRef.current.clientHeight);
+    }
+  }, [commentBoxRef.current]);
 
   const openImageModalOverlay = (image) => {
     setSelectedImage(image);
@@ -199,6 +210,10 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
     }
   };
 
+  const handlePostComment = async (image_id) => {
+    console.log("post user comment: ", image_id);
+  };
+
   return (
     <>
       <div
@@ -283,37 +298,40 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
 
       {selectedImage && (
         <Modal size="xl" show={imageModalOpen} onHide={closeImageModalOverlay}>
-            <Modal.Header className="border-0 px-2 pt-1 pb-0" closeButton></Modal.Header>
-          <Modal.Body as={Container} className="px-1 py-2">
+          <Modal.Header
+            className="border-0 px-2 pt-1 pb-0"
+            closeButton
+          ></Modal.Header>
+          <Modal.Body as={Container} className="px-1 pt-0 pb-2">
             <Row className="m-0 py-0 px-1 w-100 h-100">
-            <Col
+              <Col
                 xs={12}
                 sm={12}
                 md={6}
                 lg={8}
-                className="mx-0 my-1 px-1 py-0 rounded"
-            >
+                className="m-0 px-1 py-0 rounded"
+              >
                 <Image
-                className="w-100 h-100"
-                style={{ objectFit: "contain", borderRadius: "10px" }}
-                src={selectedImage.file_path}
+                  className="w-100 h-100"
+                  style={{ objectFit: "contain", borderRadius: "10px" }}
+                  src={selectedImage.file_path}
                 />
-            </Col>
-            <Col
+              </Col>
+              <Col
                 xs={12}
                 sm={12}
                 md={6}
                 lg={4}
                 className="mx-0 my-1 px-2 d-flex flex-column rounded"
-            >
+              >
                 <div className="selected-image-info">
-                <div className="selected-image-title">
+                  <div className="selected-image-title">
                     {selectedImage.title}
-                </div>
-                <div className="pb-2 selected-image-description">
+                  </div>
+                  <div className="pb-2 selected-image-description">
                     {selectedImage.description}
-                </div>
-                <div className="py-1 selected-image-stats d-flex justify-content-between">
+                  </div>
+                  <div className="py-1 selected-image-stats d-flex justify-content-between">
                     {/* <div>
                     <span className="comment-stats-icon">
                         <RiThumbUpFill />
@@ -322,70 +340,104 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                     like
                     </div> */}
                     <div>
-                    <span className="comment-stats-icon">
+                      <span className="comment-stats-icon">
                         <RiThumbUpLine />
-                    </span>
-                    <br />
-                    {formatStats(parseFloat(commentStats.likes))} Likes
+                      </span>
+                      <br />
+                      {formatStats(parseFloat(commentStats.likes))} Likes
                     </div>
                     <div>
-                    <span className="comment-stats-icon">
+                      <span className="comment-stats-icon">
                         <TfiCommentAlt />
-                    </span>
-                    <br />
-                    {formatStats(parseFloat(commentStats.comments))}{" "}
-                    Comments
+                      </span>
+                      <br />
+                      {formatStats(parseFloat(commentStats.comments))} Comments
                     </div>
+                  </div>
                 </div>
-                </div>
-                <div className="mt-2">
-                {imageComments.length === 0 ? (
-                    <span>No comments available</span>
-                ) : (
-                    imageComments.map((item, idx) => (
-                    <div
-                        key={idx}
-                        className={`pb-1 d-flex flex-column ${
-                        authUser && authUser.id === item.user_id
-                            ? "align-items-end"
-                            : "align-items-start"
-                        }`}
-                    >
-                        {(idx === 0 ||
-                        (idx > 0 &&
-                            !isEqual(
-                            parseISO(item.createdAt),
-                            parseISO(imageComments[idx - 1].createdAt)
-                            ))) && (
-                        <div className="text-center w-100 p-0 m-0">
-                            <span className="comment-date-heading ">
-                            {format(
+                <div ref={commentBoxRef} className="h-100 d-flex flex-column">
+                  <div
+                    className="px-2 py-1 border border-top-0"
+                    style={{
+                      overflowX: "hidden",
+                      overflowY: "scroll",
+                      height: `${commentBoxHeight - 30}px`,
+                    }}
+                  >
+                    {imageComments.length === 0 ? (
+                      <span>No comments available</span>
+                    ) : (
+                      imageComments.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className={`pb-1 d-flex flex-column ${
+                            authUser && authUser.id === item.user_id
+                              ? "align-items-end"
+                              : "align-items-start"
+                          }`}
+                        >
+                          {(idx === 0 ||
+                            (idx > 0 &&
+                              !isEqual(
                                 parseISO(item.createdAt),
-                                "dd MMM, yyyy"
-                            )}
+                                parseISO(imageComments[idx - 1].createdAt)
+                              ))) && (
+                            <div className="text-center w-100 p-0 m-0">
+                              <span className="comment-date-heading ">
+                                {format(
+                                  parseISO(item.createdAt),
+                                  "dd MMM, yyyy"
+                                )}
+                              </span>
+                            </div>
+                          )}
+                          {((idx > 0 &&
+                            item.user_id !== imageComments[idx - 1].user_id) ||
+                            idx === 0) && (
+                            <span className="comment-sender">
+                              {authUser && authUser.id === item.user_id
+                                ? "You"
+                                : item.name.split(" ")[0]}
                             </span>
+                          )}
+                          <span
+                            className={`p-1 rounded comment-box ${
+                              authUser && authUser.id === item.user_id
+                                ? "my-comment-box-bg"
+                                : "comment-box-bg"
+                            }`}
+                          >
+                            {item.comment}
+                          </span>
+                          <span className="comment-relative-time">
+                            {format(parseISO(item.createdAt), "hh:mm a")}
+                          </span>
                         </div>
-                        )}
-                        {((idx > 0 &&
-                        item.user_id !== imageComments[idx - 1].user_id) ||
-                        idx === 0) && (
-                        <span className="comment-sender">
-                            {authUser && authUser.id === item.user_id
-                            ? "You"
-                            : item.name.split(" ")[0]}
-                        </span>
-                        )}
-                        <span className="p-1 comment-box rounded">
-                        {item.comment}
-                        </span>
-                        <span className="comment-relative-time">
-                        {format(parseISO(item.createdAt), "hh:mm a")}
-                        </span>
-                    </div>
-                    ))
-                )}
+                      ))
+                    )}
+                  </div>
+                  <div className="">
+                    <InputGroup size="sm">
+                      <Form.Control
+                        type="text"
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        onKeyUp={(e) => {
+                          if (e.which === 13)
+                            handlePostComment(selectedImage._id);
+                        }}
+                      />
+                      <InputGroup.Text
+                        as={Button}
+                        onClick={(e) => handlePostComment(selectedImage._id)}
+                      >
+                        <FaPaperPlane className="me-1 text-light" />
+                        Send
+                      </InputGroup.Text>
+                    </InputGroup>
+                  </div>
                 </div>
-            </Col>
+              </Col>
             </Row>
           </Modal.Body>
         </Modal>
