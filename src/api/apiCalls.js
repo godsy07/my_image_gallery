@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../config/config";
-import { getMyApiCookieToken, isHTML } from "../utils/functions";
+import { isHTML } from "../utils/functions";
 
 export const fetchPaginatedData = async (fetch_url) => {
 	let errorResponseObject = { status: false, data: [], total_pages: 1, total_items: 0, page_no: 1, message: "Something went wrong." };
@@ -32,28 +32,20 @@ export const fetchPaginatedData = async (fetch_url) => {
 
 export const apiRequest = async ({ fetch_url="", method= 'GET', post_object={}, auth=false, multipart=false }) => {
 	let responseObject = {};
-	let apiTokenCookie;
-	if (auth) {
-		apiTokenCookie = getMyApiCookieToken();
-		if (!apiTokenCookie) return;
-	}
 	try {
 		let response;
 		if (method === "GET") {
-			if (!apiTokenCookie) {
+			if (!auth) {
 				response = await axios.get(fetch_url);
 			} else {
 				response = await axios.get(fetch_url,
 					{
-						headers: {
-							'Authorization': `Bearer ${apiTokenCookie}`,
-						},
 						withCredentials: true
 					}
 				);
 			}
 		} else {
-			if (!apiTokenCookie) {
+			if (!auth) {
 				response = await axios.post(fetch_url, post_object);
 			} else {
 				if (multipart) {
@@ -62,7 +54,6 @@ export const apiRequest = async ({ fetch_url="", method= 'GET', post_object={}, 
 						{
 							headers: {
 								'Content-Type': 'multipart/form-data',
-								'Authorization': `Bearer ${apiTokenCookie}`,
 							},
 							withCredentials: true
 						}
@@ -71,9 +62,6 @@ export const apiRequest = async ({ fetch_url="", method= 'GET', post_object={}, 
 					response = await axios.post(fetch_url,
 						post_object,
 						{
-							headers: {
-								'Authorization': `Bearer ${apiTokenCookie}`,
-							},
 							withCredentials: true
 						}
 					);
@@ -96,14 +84,23 @@ export const toggleUserImageLike = async (image_id) => {
 	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images//toggle-image-like/${image_id}`, auth: true });
 }
 
+export const getUserImageReactionsStats = async (image_id) => {
+	if (!image_id) return;
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-stats/${image_id}` });
+}
+
 export const getUserImageReactions = async (image_id) => {
 	if (!image_id) return;
 	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-reactions/${image_id}` });
 }
 
+export const handleCommentOnImage = async ({ post_object = {} }) => {
+	return await apiRequest({ method: 'POST', fetch_url: `${BASE_URL}/images/comment-on-image`, post_object, auth: true });
+}
+
 export const getUserImageDetails = async (image_id) => {
 	if (!image_id) return;
-	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-details/${image_id}`, auth: true });
+	return await apiRequest({ method: 'GET', fetch_url: `${BASE_URL}/images/get-image-details/${image_id}` });
 }
 
 export const updateUserImageDetails = async (updateObject) => {

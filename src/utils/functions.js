@@ -12,15 +12,6 @@ export const isHTML = (content) => {
   return tempElement.innerHTML !== content;
 };
 
-export const getMyApiCookieToken = () => {
-  const myCookie = document.cookie;
-  const apiTokenCookie = myCookie
-    .split("; ")
-    .find((cookie) => cookie.startsWith("my_api_token="))
-    .split("=")[1];
-  return apiTokenCookie;
-};
-
 export const formatStats = (number) => {
   let result = 0;
   if (number < 1000) {

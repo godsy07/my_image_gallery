@@ -30,12 +30,14 @@ import { useAuth } from "../auth/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import {
   getUserImageDetails,
+  getUserImageReactions,
+  getUserImageReactionsStats,
+  handleCommentOnImage,
   handleDeleteMyImageFromList,
+  toggleUserImageLike,
   updateImageApprovalStatus,
   updateUserImageDetails,
 } from "../../api/apiCalls";
-import { BASE_UPLOAD_URL } from "../../config/config";
-import { commentStats, imageComments } from "../../data/testData";
 import {
   differenceInHours,
   format,
@@ -63,6 +65,8 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
   const [updatedImage, setUpdatedImage] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [commentBoxHeight, setCommentBoxHeight] = useState(0);
+  const [reactionStats, setReactionStats] = useState(null);
+  const [userImageComments, setUserImageComments] = useState([]);
 
   useEffect(() => {
     if (commentBoxRef.current) {
@@ -70,9 +74,32 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
     }
   }, [commentBoxRef.current]);
 
-  const openImageModalOverlay = (image) => {
-    setSelectedImage(image);
-    setImageModalOpen(true);
+  const openImageModalOverlay = async (image) => {
+    const response = await getUserImageDetails(image._id);
+    if (response.status) {
+      // refetch image list
+      fetchReactionStats(image._id);
+      fetchImageComments(image._id);
+      const imageData = response.imageData;
+      setSelectedImage(imageData);
+      setImageModalOpen(true);
+    } else {
+      addToast({ type: "error", heading: "Error", message: response.message });
+    }
+  };
+
+  const fetchImageComments = async (image_id) => {
+    const response = await getUserImageReactions(image_id);
+    if (response.status) {
+      setUserImageComments(response.comments);
+    }
+  };
+
+  const fetchReactionStats = async (image_id) => {
+    const response = await getUserImageReactionsStats(image_id);
+    if (response.status) {
+      setReactionStats(response.stats);
+    }
   };
 
   const closeImageModalOverlay = () => {
@@ -210,8 +237,48 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
     }
   };
 
+  const handleToggleLike = async (image_id) => {
+    const response = await toggleUserImageLike(image_id);
+    if (response.status) {
+      fetchReactionStats(image_id);
+      fetchImageComments(image_id);
+      if (selectedImage.liked) {
+        setSelectedImage({ ...selectedImage, liked: !selectedImage.liked });
+      } else {
+        setSelectedImage({ ...selectedImage, liked: true });
+      }
+      addToast({
+        type: "success",
+        heading: "Success",
+        message: response.message,
+      });
+    } else {
+      addToast({ type: "error", heading: "Error", message: response.message });
+    }
+  };
+
   const handlePostComment = async (image_id) => {
-    console.log("post user comment: ", image_id);
+    if (!image_id) return;
+    if (!commentText || (commentText && commentText.length > 400))
+      addToast({
+        type: "error",
+        heading: "Error",
+        message: "Please enter a valid comment.",
+      });
+    let post_object = { image_id, comment: commentText };
+    const response = await handleCommentOnImage({ post_object });
+    if (response.status) {
+      fetchReactionStats(image_id);
+      fetchImageComments(image_id);
+      setCommentText("");
+      addToast({
+        type: "success",
+        heading: "Success",
+        message: response.message,
+      });
+    } else {
+      addToast({ type: "error", heading: "Error", message: response.message });
+    }
   };
 
   return (
@@ -226,9 +293,6 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
         {isHovered && (
           <div className="overlay d-flex flex-column justify-content-between">
             <div className="w-100 px-2 d-flex justify-content-between">
-              <div>
-                <FaEye onClick={() => openImageModalOverlay(image_data)} />
-              </div>
               {authUser && location.pathname === "/dashboard" && (
                 <div>
                   <FaTrashAlt
@@ -241,38 +305,41 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
             <div className="w-100 mb-4 text-center d-flex flex-column justify-content-center">
               <div className="overlay-image-title">{image_data.title}</div>
               <div className="overlay-image-description">
-                {image_data.description}
+                {authUser && location.pathname === "/dashboard" && (
+                  <Badge
+                    className="mt-2"
+                    bg={
+                      image_data.status === "pending"
+                        ? "warning"
+                        : image_data.status === "approved"
+                        ? "success"
+                        : "danger"
+                    }
+                    style={{ fontSize: "12px" }}
+                  >
+                    Approval Status: {image_data.status}
+                  </Badge>
+                )}
               </div>
-              {authUser && location.pathname === "/dashboard" && (
-                <>
-                  <div className="overlay-image-description">
-                    <Badge
-                      className="mt-2"
-                      bg={
-                        image_data.status === "pending"
-                          ? "warning"
-                          : image_data.status === "approved"
-                          ? "success"
-                          : "danger"
-                      }
-                      style={{ fontSize: "12px" }}
-                    >
-                      Approval Status: {image_data.status}
-                    </Badge>
-                  </div>
-                  <div className="overlay-options text-center">
-                    <Button
-                      size="sm"
-                      onClick={(e) => handleViewImageEditModal(e, image_data)}
-                    >
-                      <span className="d-flex justify-content-center align-items-center">
-                        <span className="me-1">Edit</span>
-                        <FaEdit />
-                      </span>
-                    </Button>
-                  </div>
-                </>
-              )}
+              <div className="overlay-options text-center">
+                <Button size="sm" className="me-1" onClick={() => openImageModalOverlay(image_data)}>
+                  <span className="d-flex justify-content-center align-items-center">
+                    <FaEye />
+                    <span className="me-1">View</span>
+                  </span>
+                </Button>
+                {authUser && location.pathname === "/dashboard" && (
+                  <Button
+                    size="sm"
+                    onClick={(e) => handleViewImageEditModal(e, image_data)}
+                  >
+                    <span className="d-flex justify-content-center align-items-center">
+                      <FaEdit />
+                      <span className="me-1">Edit</span>
+                    </span>
+                  </Button>
+                )}
+              </div>
               {authUser &&
                 authUser.user_type === "admin" &&
                 location.pathname === "/pending-images" && (
@@ -312,7 +379,7 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                 className="m-0 px-1 py-0 rounded"
               >
                 <Image
-                  className="w-100 h-100"
+                  className="w-100 h-100 img-fluid"
                   style={{ objectFit: "contain", borderRadius: "10px" }}
                   src={selectedImage.file_path}
                 />
@@ -331,31 +398,40 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                   <div className="pb-2 selected-image-description">
                     {selectedImage.description}
                   </div>
-                  <div className="py-1 selected-image-stats d-flex justify-content-between">
-                    {/* <div>
-                    <span className="comment-stats-icon">
-                        <RiThumbUpFill />
-                    </span>
-                    <br />
-                    like
-                    </div> */}
-                    <div>
-                      <span className="comment-stats-icon">
-                        <RiThumbUpLine />
-                      </span>
-                      <br />
-                      {formatStats(parseFloat(commentStats.likes))} Likes
+                  {reactionStats && (
+                    <div className="py-1 selected-image-stats d-flex justify-content-between">
+                      <div>
+                        <span className="comment-stats-icon">
+                          {selectedImage.liked ? (
+                            <RiThumbUpFill
+                              title="Liked"
+                              onClick={() =>
+                                handleToggleLike(selectedImage._id)
+                              }
+                            />
+                          ) : (
+                            <RiThumbUpLine
+                              onClick={() =>
+                                handleToggleLike(selectedImage._id)
+                              }
+                            />
+                          )}
+                        </span>
+                        <br />
+                        {formatStats(parseFloat(reactionStats.likes))} Likes
+                      </div>
+                      <div>
+                        <span className="comment-stats-icon">
+                          <TfiCommentAlt />
+                        </span>
+                        <br />
+                        {formatStats(parseFloat(reactionStats.comments))}{" "}
+                        Comments
+                      </div>
                     </div>
-                    <div>
-                      <span className="comment-stats-icon">
-                        <TfiCommentAlt />
-                      </span>
-                      <br />
-                      {formatStats(parseFloat(commentStats.comments))} Comments
-                    </div>
-                  </div>
+                  )}
                 </div>
-                <div ref={commentBoxRef} className="h-100 d-flex flex-column">
+                <div ref={commentBoxRef} className="h-100 d-flex flex-column" >
                   <div
                     className="px-2 py-1 border border-top-0"
                     style={{
@@ -364,14 +440,14 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                       height: `${commentBoxHeight - 30}px`,
                     }}
                   >
-                    {imageComments.length === 0 ? (
+                    {userImageComments.length === 0 ? (
                       <span>No comments available</span>
                     ) : (
-                      imageComments.map((item, idx) => (
+                      userImageComments.map((item, idx) => (
                         <div
                           key={idx}
                           className={`pb-1 d-flex flex-column ${
-                            authUser && authUser.id === item.user_id
+                            authUser && authUser.id === item.user_id._id
                               ? "align-items-end"
                               : "align-items-start"
                           }`}
@@ -380,7 +456,7 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                             (idx > 0 &&
                               !isEqual(
                                 parseISO(item.createdAt),
-                                parseISO(imageComments[idx - 1].createdAt)
+                                parseISO(userImageComments[idx - 1].createdAt)
                               ))) && (
                             <div className="text-center w-100 p-0 m-0">
                               <span className="comment-date-heading ">
@@ -392,22 +468,23 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                             </div>
                           )}
                           {((idx > 0 &&
-                            item.user_id !== imageComments[idx - 1].user_id) ||
+                            item.user_id !==
+                              userImageComments[idx - 1].user_id._id) ||
                             idx === 0) && (
                             <span className="comment-sender">
-                              {authUser && authUser.id === item.user_id
+                              {authUser && authUser.id === item.user_id._id
                                 ? "You"
-                                : item.name.split(" ")[0]}
+                                : item.user_id.first_name}
                             </span>
                           )}
                           <span
                             className={`p-1 rounded comment-box ${
-                              authUser && authUser.id === item.user_id
+                              authUser && authUser.id === item.user_id._id
                                 ? "my-comment-box-bg"
                                 : "comment-box-bg"
                             }`}
                           >
-                            {item.comment}
+                            {item.content}
                           </span>
                           <span className="comment-relative-time">
                             {format(parseISO(item.createdAt), "hh:mm a")}
@@ -416,26 +493,28 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                       ))
                     )}
                   </div>
-                  <div className="">
-                    <InputGroup size="sm">
-                      <Form.Control
-                        type="text"
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        onKeyUp={(e) => {
-                          if (e.which === 13)
-                            handlePostComment(selectedImage._id);
-                        }}
-                      />
-                      <InputGroup.Text
-                        as={Button}
-                        onClick={(e) => handlePostComment(selectedImage._id)}
-                      >
-                        <FaPaperPlane className="me-1 text-light" />
-                        Send
-                      </InputGroup.Text>
-                    </InputGroup>
-                  </div>
+                  {authUser && (
+                    <div className="">
+                      <InputGroup size="sm">
+                        <Form.Control
+                          type="text"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          onKeyUp={(e) => {
+                            if (e.which === 13)
+                              handlePostComment(selectedImage._id);
+                          }}
+                        />
+                        <InputGroup.Text
+                          as={Button}
+                          onClick={(e) => handlePostComment(selectedImage._id)}
+                        >
+                          <FaPaperPlane className="me-1 text-light" />
+                          Send
+                        </InputGroup.Text>
+                      </InputGroup>
+                    </div>
+                  )}
                 </div>
               </Col>
             </Row>
@@ -502,7 +581,7 @@ const ImageDiv = ({ image_data, refreshFetchURL = () => {} }) => {
                 <Image
                   src={
                     typeof updatedImage === "string"
-                      ? `${BASE_UPLOAD_URL}/${updatedImage}`
+                      ? updatedImage
                       : URL.createObjectURL(updatedImage)
                   }
                   className="rounded"
